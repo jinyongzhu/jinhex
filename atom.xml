@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://jinyongzhu.github.io/"/>
-  <updated>2019-11-20T08:21:57.032Z</updated>
+  <updated>2019-11-21T06:56:28.446Z</updated>
   <id>https://jinyongzhu.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://jinyongzhu.github.io/2019/1120/Python%E5%A4%87%E4%BB%BDMySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E8%84%9A%E6%9C%AC/"/>
     <id>https://jinyongzhu.github.io/2019/1120/Python%E5%A4%87%E4%BB%BDMySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E8%84%9A%E6%9C%AC/</id>
     <published>2019-11-20T08:18:38.000Z</published>
-    <updated>2019-11-20T08:21:57.032Z</updated>
+    <updated>2019-11-21T06:56:28.446Z</updated>
     
     <content type="html"><![CDATA[<p>#!/usr/bin/env python3<br />import os<br />import time<br />import datetime</p><h1 id="定义服务器用户名-密码-数据库名称多个库分行放置和备份的路径"><a class="markdownIt-Anchor" href="#定义服务器用户名-密码-数据库名称多个库分行放置和备份的路径"></a> 定义服务器，用户名、密码、数据库名称（多个库分行放置）和备份的路径</h1><p>DB_USER = ‘root’<br />DB_PASSWD = ‘root7895123’<br />DB_NAME = ‘/root/dbnames.txt’<br />MYSQLDUMP = ‘/usr/local/mysql/bin/mysqldump’<br />BACKUP_PATH = ‘/data/backup/mysql/’</p><p>DATETIME = time.strftime(’%Y%m%d-%H%M%S’)<br />TODAYBACKUPPATH = BACKUP_PATH + DATETIME</p><p>print(“createing backup folder!”)</p><h1 id="创建备份文件夹"><a class="markdownIt-Anchor" href="#创建备份文件夹"></a> 创建备份文件夹</h1><p>if not os.path.exists(TODAYBACKUPPATH):<br />os.makedirs(TODAYBACKUPPATH)</p><p>print(“checking for databases names file”)</p><h1 id="定义执行备份脚本读取文件中的数据库名称注意按行读写不校验是否存在该库"><a class="markdownIt-Anchor" href="#定义执行备份脚本读取文件中的数据库名称注意按行读写不校验是否存在该库"></a> 定义执行备份脚本，读取文件中的数据库名称，注意按行读写，不校验是否存在该库</h1><p>def run_backup():<br />in_file = open(DB_NAME,“r”)<br />for dbname in in_file.readlines():<br />dbname = dbname.strip()<br />print(“now starting backup database %s” %dbname)<br />dumpcmd = MYSQLDUMP+&quot; -u&quot; +DB_USER + &quot; -p&quot;+DB_PASSWD+&quot; &quot; +dbname+&quot; &gt; “+TODAYBACKUPPATH +”/&quot;+dbname+&quot;.sql&quot;<br />os.system(dumpcmd)<br />in_file.close()</p><h1 id="执行压缩的函数"><a class="markdownIt-Anchor" href="#执行压缩的函数"></a> 执行压缩的函数</h1><p>def run_tar():<br />compress_file = TODAYBACKUPPATH + “.tar.gz”<br />compress_cmd = “tar -czvf &quot; +compress_file+” &quot;+DATETIME<br />os.chdir(BACKUP_PATH)<br />os.system(“pwd”)<br />os.system(compress_cmd)<br />print(“compress complete!”)<br /># 删除备份文件夹<br />remove_cmd = &quot;rm -rf &quot;+TODAYBACKUPPATH<br />os.system(remove_cmd)</p><h1 id="备份数据库文件存在就执行备份和压缩否则退出"><a class="markdownIt-Anchor" href="#备份数据库文件存在就执行备份和压缩否则退出"></a> 备份数据库文件存在就执行备份和压缩,否则退出</h1><p>if os.path.exists(DB_NAME):<br />file1 = open(DB_NAME)<br />print(&quot;starting backup of all db listed in file &quot;+DB_NAME)<br />run_backup()<br />run_tar()<br />print(“backup success!”)<br />else:<br />print(“database file not found…”)<br />exit()</p><h1 id="python脚本备份定时任务"><a class="markdownIt-Anchor" href="#python脚本备份定时任务"></a> Python脚本备份定时任务</h1><p>30 9 * * * /usr/local/bin/python3 /usr/local/sbin/python_backup.py &gt; /dev/null 2&gt;&amp;1</p>]]></content>
     
@@ -53,7 +53,7 @@ import datetime&lt;/p&gt;
     <link href="https://jinyongzhu.github.io/2019/1120/nginx%E9%85%8D%E7%BD%AEGoogle%E6%B5%B7%E5%A4%96%E4%BB%A3%E7%90%86/"/>
     <id>https://jinyongzhu.github.io/2019/1120/nginx%E9%85%8D%E7%BD%AEGoogle%E6%B5%B7%E5%A4%96%E4%BB%A3%E7%90%86/</id>
     <published>2019-11-20T06:58:02.000Z</published>
-    <updated>2019-11-20T08:00:35.222Z</updated>
+    <updated>2019-11-21T06:56:11.318Z</updated>
     
     <content type="html"><![CDATA[<p>proxy_cache_path /run/shm levels=1:2 keys_zone=one:100m max_size=1g;<br />proxy_cache_key <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>h</mi><mi>o</mi><mi>s</mi><mi>t</mi></mrow><annotation encoding="application/x-tex">host</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">h</span><span class="mord mathdefault">o</span><span class="mord mathdefault">s</span><span class="mord mathdefault">t</span></span></span></span>request_uri;</p><p>upstream google {<br />server 216.58.221.142 max_fails=3 fail_timeout=10s; //IP自己添加<br />}</p><p>server {<br />listen 80;<br />server_name <a href="http://g.ttlsa.com" target="_blank" rel="noopener">g.ttlsa.com</a>;</p><pre><code>location / {    proxy_pass http://google;    proxy_cache one;    proxy_cache_valid 200 302 2h;    proxy_cache_valid 404 1h;    proxy_buffering off;    proxy_cookie_domain google.com g.ttlsa.com;    proxy_redirect https://www.google.com/ /;    proxy_set_header X-Real-IP $remote_addr;    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;    proxy_set_header Accept-Encoding &quot;&quot;;    proxy_set_header User-Agent $http_user_agent;    sub_filter www.google.com g.ttlsa.com;    sub_filter_once off;}</code></pre><p>}</p>]]></content>
     

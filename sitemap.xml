@@ -2,30 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://jinyongzhu.github.io/2019/1120/Python%25E5%25A4%2587%25E4%25BB%25BDMySQL%25E6%2595%25B0%25E6%258D%25AE%25E5%25BA%2593%25E8%2584%259A%25E6%259C%25AC/</loc>
-    
-    <lastmod>2019-11-20T08:21:57.032Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://jinyongzhu.github.io/tags/index.html</loc>
     
-    <lastmod>2019-11-20T08:14:57.145Z</lastmod>
+    <lastmod>2019-11-22T01:58:50.205Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://jinyongzhu.github.io/categories/index.html</loc>
     
-    <lastmod>2019-11-20T08:13:05.650Z</lastmod>
+    <lastmod>2019-11-22T01:53:31.175Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://jinyongzhu.github.io/2019/1120/Python%25E5%25A4%2587%25E4%25BB%25BDMySQL%25E6%2595%25B0%25E6%258D%25AE%25E5%25BA%2593%25E8%2584%259A%25E6%259C%25AC/</loc>
+    
+    <lastmod>2019-11-21T06:56:28.446Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://jinyongzhu.github.io/2019/1120/nginx%25E9%2585%258D%25E7%25BD%25AEGoogle%25E6%25B5%25B7%25E5%25A4%2596%25E4%25BB%25A3%25E7%2590%2586/</loc>
     
-    <lastmod>2019-11-20T08:00:35.222Z</lastmod>
+    <lastmod>2019-11-21T06:56:11.318Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://jinyongzhu.github.io/about/index.html</loc>
+    
+    <lastmod>2019-11-21T06:47:10.424Z</lastmod>
     
   </url>
   
@@ -37,21 +44,14 @@
   </url>
   
   <url>
-    <loc>https://jinyongzhu.github.io/about/index.html</loc>
-    
-    <lastmod>2019-11-19T10:36:14.378Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://jinyongzhu.github.io/links/index.html</loc>
+    <loc>https://jinyongzhu.github.io/repository/index.html</loc>
     
     <lastmod>2019-11-19T09:55:31.109Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://jinyongzhu.github.io/repository/index.html</loc>
+    <loc>https://jinyongzhu.github.io/links/index.html</loc>
     
     <lastmod>2019-11-19T09:55:31.109Z</lastmod>
     
