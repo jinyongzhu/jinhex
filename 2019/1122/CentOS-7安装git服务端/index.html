@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>CentOS 7安装git服务端 | JinYongzhu - Web设计开发 &amp;amp 服务器运维</title>
+  <meta name="description" content="系统版本：CentOS Linux release 7.6.1810 (Core) Git版本：git version 1.8.3.1 Git安装： 一、安装git和创建用户  安装Git $ yum install git  创建一个git用户组和用户，用来运行git服务 $ groupadd git $ adduser git -g git  禁止git用户登录:  修改&#x2F;etc&#x2F;passwd">
+<meta name="keywords" content="Linux,CentOS 7,Git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS 7安装git服务端">
+<meta property="og:url" content="https:&#x2F;&#x2F;jinyongzhu.github.io&#x2F;2019&#x2F;1122&#x2F;CentOS-7%E5%AE%89%E8%A3%85git%E6%9C%8D%E5%8A%A1%E7%AB%AF&#x2F;index.html">
+<meta property="og:site_name" content="技术博客 - Hexo">
+<meta property="og:description" content="系统版本：CentOS Linux release 7.6.1810 (Core) Git版本：git version 1.8.3.1 Git安装： 一、安装git和创建用户  安装Git $ yum install git  创建一个git用户组和用户，用来运行git服务 $ groupadd git $ adduser git -g git  禁止git用户登录:  修改&#x2F;etc&#x2F;passwd">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-22T03:01:49.246Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://jinyongzhu.github.io/2019/1122/CentOS-7%E5%AE%89%E8%A3%85git%E6%9C%8D%E5%8A%A1%E7%AB%AF/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="技术博客 - Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">JinYongzhu</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web设计开发 &amp; 服务器运维</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanjing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎大家来到本博客进行技术的交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/">CentOS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/">CentOS 7</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/LNMP/">LNMP</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/DDoS/">DDoS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Nginx/">Nginx</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS/" rel="tag">CentOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-7/" rel="tag">CentOS 7</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LNMP/" rel="tag">LNMP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/" rel="tag">Python</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/CentOS/" style="font-size: 13px;">CentOS</a> <a href="/tags/CentOS-7/" style="font-size: 13.33px;">CentOS 7</a> <a href="/tags/DDoS/" style="font-size: 13px;">DDoS</a> <a href="/tags/Git/" style="font-size: 13px;">Git</a> <a href="/tags/LNMP/" style="font-size: 13px;">LNMP</a> <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 13.67px;">Nginx</a> <a href="/tags/Python/" style="font-size: 13px;">Python</a> <a href="/tags/shell/" style="font-size: 13px;">shell</a> <a href="/tags/vim/" style="font-size: 13px;">vim</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">13</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/GET-%E5%92%8C-POST-%E5%88%B0%E5%BA%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="title">GET 和 POST 到底有什么区别？</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:13:39.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/Nginx/">Nginx</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/nginx-php-fpm%E5%87%BA%E7%8E%B0502-bad-gateway%E9%94%99%E8%AF%AF%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" class="title">nginx+php-fpm出现502 bad gateway错误解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:08:45.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/CentOS/">CentOS</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/" class="title">CentOS的文件权限与目录配置</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:04:53.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/shell/">shell</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/SHELL%E4%B8%AD%E5%90%84%E7%A7%8D%E6%8B%AC%E5%8F%B7%E7%9A%84%E4%BD%9C%E7%94%A8-%E3%80%81-%E3%80%81-%E3%80%81-%E3%80%81/" class="title">SHELL中各种括号的作用()、(())、[]、[[]]、{}</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:03:44.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/vim/">vim</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/" class="title">VIM命令使用大全</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:02:23.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#安装git"><span class="toc-number">1.</span> <span class="toc-text"> 安装Git</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建一个git用户组和用户用来运行git服务"><span class="toc-number">2.</span> <span class="toc-text"> 创建一个git用户组和用户，用来运行git服务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#禁止git用户登录"><span class="toc-number">3.</span> <span class="toc-text"> 禁止git用户登录:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修改etcpasswd文件修改"><span class="toc-number">4.</span> <span class="toc-text"> 修改/etc/passwd文件，修改</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#找到这句"><span class="toc-number">5.</span> <span class="toc-text"> 找到这句：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#改为"><span class="toc-number">6.</span> <span class="toc-text"> 改为：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建证书登录"><span class="toc-number">7.</span> <span class="toc-text"> 创建证书登录</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#owner改为git"><span class="toc-number">8.</span> <span class="toc-text"> owner改为git</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建私钥文件位于用户主目录里找到ssh目录里面有id_rsa和id_rsapub两个文件服务器设置公私钥请参照网上有关资料"><span class="toc-number">9.</span> <span class="toc-text"> 创建私钥，文件位于用户主目录里找到.ssh目录，里面有id_rsa和id_rsa.pub两个文件(服务器设置公私钥请参照网上有关资料)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#创建一个空的git仓库服务器上的git仓库通常都以git结尾"><span class="toc-number">10.</span> <span class="toc-text"> 创建一个空的Git仓库，服务器上的Git仓库通常都以.git结尾</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#将仓库所属用户改为git"><span class="toc-number">11.</span> <span class="toc-text"> 将仓库所属用户改为git</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在桌面上克隆服务器端projectgit项目"><span class="toc-number">12.</span> <span class="toc-text"> 在桌面上克隆服务器端project.git项目</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#打开git命令行进入桌面"><span class="toc-number">13.</span> <span class="toc-text"> 打开git命令行，进入桌面</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-CentOS-7安装git服务端" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CentOS 7安装git服务端
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2019/1122/CentOS-7%E5%AE%89%E8%A3%85git%E6%9C%8D%E5%8A%A1%E7%AB%AF/" class="article-date">
+	  <time datetime="2019-11-22T03:00:33.000Z" itemprop="datePublished">2019-11-22</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>►<a class="article-category-link" href="/categories/Linux/Git/">Git</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/CentOS-7/" rel="tag">CentOS 7</a>, <a class="article-tag-link" href="/tags/Git/" rel="tag">Git</a>, <a class="article-tag-link" href="/tags/Linux/" rel="tag">Linux</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2019/1122/CentOS-7%E5%AE%89%E8%A3%85git%E6%9C%8D%E5%8A%A1%E7%AB%AF/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>系统版本：CentOS Linux release 7.6.1810 (Core)<br>
+Git版本：git version 1.8.3.1</p>
+<p>Git安装：<br>
+一、安装git和创建用户</p>
+<h1 id="安装git"><a class="markdownIt-Anchor" href="#安装git"></a> 安装Git</h1>
+<p>$ yum install git</p>
+<h1 id="创建一个git用户组和用户用来运行git服务"><a class="markdownIt-Anchor" href="#创建一个git用户组和用户用来运行git服务"></a> 创建一个git用户组和用户，用来运行git服务</h1>
+<p>$ groupadd git<br>
+$ adduser git -g git</p>
+<h1 id="禁止git用户登录"><a class="markdownIt-Anchor" href="#禁止git用户登录"></a> 禁止git用户登录:</h1>
+<h1 id="修改etcpasswd文件修改"><a class="markdownIt-Anchor" href="#修改etcpasswd文件修改"></a> 修改/etc/passwd文件，修改</h1>
+<h1 id="找到这句"><a class="markdownIt-Anchor" href="#找到这句"></a> 找到这句：</h1>
+<p>git❌503:503::/home/git:/bin/bash</p>
+<h1 id="改为"><a class="markdownIt-Anchor" href="#改为"></a> 改为：</h1>
+<p>git❌503:503::/home/git:/bin/git-shell</p>
+<h1 id="创建证书登录"><a class="markdownIt-Anchor" href="#创建证书登录"></a> 创建证书登录</h1>
+<p>mkdir /home/git/.ssh<br>
+chmod 700 /home/git/.ssh<br>
+touch 700 /home/git/.ssh/authorized_keys<br>
+chmod 600 /home/git/.ssh/authorized_keys</p>
+<h1 id="owner改为git"><a class="markdownIt-Anchor" href="#owner改为git"></a> owner改为git</h1>
+<p>chown -R git:git /home/git/.ssh/</p>
+<h1 id="创建私钥文件位于用户主目录里找到ssh目录里面有id_rsa和id_rsapub两个文件服务器设置公私钥请参照网上有关资料"><a class="markdownIt-Anchor" href="#创建私钥文件位于用户主目录里找到ssh目录里面有id_rsa和id_rsapub两个文件服务器设置公私钥请参照网上有关资料"></a> 创建私钥，文件位于用户主目录里找到.ssh目录，里面有id_rsa和id_rsa.pub两个文件(服务器设置公私钥请参照网上有关资料)</h1>
+<p>$ ssh-keygen -t rsa<br>
+创建完公私钥后将私钥文件放到客户端的~/.ssh目录下</p>
+<p>二、初始化git仓库<br>
+cd /srv<br>
+mkdir gitrepo<br>
+chown git:git gitrepo/<br>
+cd gitrepo</p>
+<h1 id="创建一个空的git仓库服务器上的git仓库通常都以git结尾"><a class="markdownIt-Anchor" href="#创建一个空的git仓库服务器上的git仓库通常都以git结尾"></a> 创建一个空的Git仓库，服务器上的Git仓库通常都以.git结尾</h1>
+<p>$ git init project.git</p>
+<h1 id="将仓库所属用户改为git"><a class="markdownIt-Anchor" href="#将仓库所属用户改为git"></a> 将仓库所属用户改为git</h1>
+<p>$ chown -R git:git project.git</p>
+<p>三、安装客户端</p>
+<p>下载地址：<a href="https://git-scm.com/downloads" target="_blank" rel="noopener">https://git-scm.com/downloads</a><br>
+按照安装界面一步步安装就可以了</p>
+<h1 id="在桌面上克隆服务器端projectgit项目"><a class="markdownIt-Anchor" href="#在桌面上克隆服务器端projectgit项目"></a> 在桌面上克隆服务器端project.git项目</h1>
+<h1 id="打开git命令行进入桌面"><a class="markdownIt-Anchor" href="#打开git命令行进入桌面"></a> 打开git命令行，进入桌面</h1>
+<p>git clone <a href="mailto:git@xxx.xxx.xxx.xxx" target="_blank" rel="noopener">git@xxx.xxx.xxx.xxx</a>:xxxx/srv/gitrepo/project.git</p>
+<p>#接下来我们切换到project目录下，并手动创建1.txt(内自己写内容)文件<br>
+touch 1.txt</p>
+<p>#接下来，我们从工作区添加到版本库的暂存区、仓库区，上传到服务器<br>
+git add 1.txt<br>
+git commit -m ‘new 1.txt’<br>
+git push origin master</p>
+<p>#至此，我们已经完成了基本的创建新文件并保存的任务</p>
+<p>#注意事项：</p>
+<p>在使用Git Push代码到数据仓库时，提示如下错误:<br>
+[remote rejected] master -&gt; master (branch is currently checked out)</p>
+<p>错误原型<br>
+remote: error: refusing to update checked out branch: refs/heads/master<br>
+remote: error: By default, updating the current branch in a non-bare repository<br>
+remote: error: is denied, because it will make the index and work tree inconsistent<br>
+remote: error: with what you pushed, and will require ‘git reset --hard’ to match<br>
+remote: error: the work tree to HEAD.</p>
+<p>错误原因以及解决：<br>
+这是由于git默认拒绝了push操作，需要进行设置，修改/srv/gitrepo/project.git/.git/config文件后面添加如下代码：<br>
+[receive]<br>
+denyCurrentBranch = ignore</p>
+<p>无法查看push后的git中文件的原因与解决方法:</p>
+<p>#在初始化远程仓库时最好使用 git --bare init   而不要使用：git init</p>
+<p>#如果使用了git init初始化，则远程仓库的目录下，也包含work tree，当本地仓库向远程仓库push时,   如果远程仓库正在push的分支上（如果当时不在push的分支，就没有问题）, 那么push后的结果不会反应在work tree上,  也即在远程仓库的目录下对应的文件还是之前的内容。</p>
+<p>解决方法：</p>
+<p>#必须得使用命令git reset --hard才能看到push后的内容</p>
+<p>搭建服务器上的GIT并实现自动同步到站点目录(www):<br>
+#就比如刚才我们往远程仓库推送了index.php文件，虽然提示推送成功，但是我们现在在服务器端还看不到效果，<br>
+心理总是不爽。又比如我写了个html页面，我想在站点中马上看到，那自动同步就派上用场了。</p>
+<p>#自动同步功能用到的是 git 的钩子功能，</p>
+<p>服务器端：进入裸仓库：/srv/gitrepo/project.git/.git<br>
+cd /srv/gitrepo/project.git/.git<br>
+cd hooks</p>
+<p>//这里我们创建post-receive文件<br>
+vim post-receive<br>
+//在该文件里输入以下内容<br>
+#!/bin/bash<br>
+git --work-tree=/data/www checkout -f<br>
+//保存退出后，将该文件用户及用户组都设置成git<br>
+chown git:git post-receive<br>
+//由于该文件其实就是一个shell文件，我们还应该为其设置可执行权限<br>
+chmod +x post-receive</p>
+<p>如果你在Git推送的工程中发现推送成功 但是在www目录下并没有自己的代码，这时候你可要注意了：这是由于文件夹的权限的原因造成的！ 假设你的www目录的所属的用户组为root，你可以将你的git用户加入这个组;并给git添加写入权限，或者其他解决方法，反正你要服务器上的git用户有权限进入www文件夹。</p>
+<p>cd /data/www<br>
+gpasswd -a git root<br>
+chmod 775 /data/www<br>
+git reset --hard</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://jinyongzhu.github.io/2019/1122/CentOS-7%E5%AE%89%E8%A3%85git%E6%9C%8D%E5%8A%A1%E7%AB%AF/" title="CentOS 7安装git服务端" target="_blank" rel="external">https://jinyongzhu.github.io/2019/1122/CentOS-7%E5%AE%89%E8%A3%85git%E6%9C%8D%E5%8A%A1%E7%AB%AF/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">JinYongzhu</span><small class="ml-1x">Web设计开发 &amp; 服务器运维</small></a></h3>
+        <div>Web设计、开发，服务器运维；计算机技术爱好者，和广大代码爱好者共同学习、努力和进步。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NzYyOS8yNDEyNw==">
+        <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+      </div>    
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/" title="VIM命令使用大全"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2019/1122/CentOS-7%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85LNMP%E7%8E%AF%E5%A2%83/" title="CentOS 7源码安装LNMP环境"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+<script defer type="text/javascript">
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+
+    if (typeof LivereTower === 'function') { return; }
+
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+
+
+
+
+
+
+
+</body>
+</html>

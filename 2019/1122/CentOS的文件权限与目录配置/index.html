@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>CentOS的文件权限与目录配置 | JinYongzhu - Web设计开发 &amp;amp 服务器运维</title>
+  <meta name="description" content="Linux一般将文件可存取访问的身份分为3个类别，分别是owner、group、others，且3种身份各有read、write、execute等权限。 2. 每个账号都可以有多个用户组支持。 3. &#x2F;etc&#x2F;passwd，默认情况下所有系统上的账号与一般身份用户还有root的相关信息，都记录在这个文件夹中。 &#x2F;etc&#x2F;shadow，个人密码记录在这个文件夹中。 &#x2F;etc&#x2F;group，所有的">
+<meta name="keywords" content="Linux,CentOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS的文件权限与目录配置">
+<meta property="og:url" content="https:&#x2F;&#x2F;jinyongzhu.github.io&#x2F;2019&#x2F;1122&#x2F;CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE&#x2F;index.html">
+<meta property="og:site_name" content="技术博客 - Hexo">
+<meta property="og:description" content="Linux一般将文件可存取访问的身份分为3个类别，分别是owner、group、others，且3种身份各有read、write、execute等权限。 2. 每个账号都可以有多个用户组支持。 3. &#x2F;etc&#x2F;passwd，默认情况下所有系统上的账号与一般身份用户还有root的相关信息，都记录在这个文件夹中。 &#x2F;etc&#x2F;shadow，个人密码记录在这个文件夹中。 &#x2F;etc&#x2F;group，所有的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-22T03:05:49.469Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://jinyongzhu.github.io/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="技术博客 - Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">JinYongzhu</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web设计开发 &amp; 服务器运维</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanjing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎大家来到本博客进行技术的交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/">CentOS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/">CentOS 7</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/LNMP/">LNMP</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/DDoS/">DDoS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Nginx/">Nginx</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS/" rel="tag">CentOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-7/" rel="tag">CentOS 7</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LNMP/" rel="tag">LNMP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/" rel="tag">Python</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/CentOS/" style="font-size: 13px;">CentOS</a> <a href="/tags/CentOS-7/" style="font-size: 13.33px;">CentOS 7</a> <a href="/tags/DDoS/" style="font-size: 13px;">DDoS</a> <a href="/tags/Git/" style="font-size: 13px;">Git</a> <a href="/tags/LNMP/" style="font-size: 13px;">LNMP</a> <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 13.67px;">Nginx</a> <a href="/tags/Python/" style="font-size: 13px;">Python</a> <a href="/tags/shell/" style="font-size: 13px;">shell</a> <a href="/tags/vim/" style="font-size: 13px;">vim</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">13</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/GET-%E5%92%8C-POST-%E5%88%B0%E5%BA%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="title">GET 和 POST 到底有什么区别？</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:13:39.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/Nginx/">Nginx</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/nginx-php-fpm%E5%87%BA%E7%8E%B0502-bad-gateway%E9%94%99%E8%AF%AF%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" class="title">nginx+php-fpm出现502 bad gateway错误解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:08:45.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/CentOS/">CentOS</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/" class="title">CentOS的文件权限与目录配置</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:04:53.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/shell/">shell</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/SHELL%E4%B8%AD%E5%90%84%E7%A7%8D%E6%8B%AC%E5%8F%B7%E7%9A%84%E4%BD%9C%E7%94%A8-%E3%80%81-%E3%80%81-%E3%80%81-%E3%80%81/" class="title">SHELL中各种括号的作用()、(())、[]、[[]]、{}</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:03:44.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/vim/">vim</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/" class="title">VIM命令使用大全</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:02:23.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-CentOS的文件权限与目录配置" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CentOS的文件权限与目录配置
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/" class="article-date">
+	  <time datetime="2019-11-22T03:04:53.000Z" itemprop="datePublished">2019-11-22</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>►<a class="article-category-link" href="/categories/Linux/CentOS/">CentOS</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/CentOS/" rel="tag">CentOS</a>, <a class="article-tag-link" href="/tags/Linux/" rel="tag">Linux</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <ol>
+<li></li>
+</ol>
+<p>Linux一般将文件可存取访问的身份分为3个类别，分别是owner、group、others，且3种身份各有read、write、execute等权限。<br>
+2.<br>
+每个账号都可以有多个用户组支持。<br>
+3.<br>
+/etc/passwd，默认情况下所有系统上的账号与一般身份用户还有root的相关信息，都记录在这个文件夹中。<br>
+/etc/shadow，个人密码记录在这个文件夹中。<br>
+/etc/group，所有的组名记录在这个文件夹中。<br>
+Linux文件权限概念</p>
+<p>Linux文件属性<br>
+1.<br>
+<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>s</mi><mo>−</mo><mi>a</mi><mi>l</mi><mi mathvariant="normal">，</mi><mi>l</mi><mi>s</mi><mi mathvariant="normal">是</mi><mi mathvariant="normal">“</mi><mi>l</mi><mi>i</mi><mi>s</mi><mi>t</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">意</mi><mi mathvariant="normal">思</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">重</mi><mi mathvariant="normal">点</mi><mi mathvariant="normal">在</mi><mi mathvariant="normal">显</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">名</mi><mi mathvariant="normal">与</mi><mi mathvariant="normal">相</mi><mi mathvariant="normal">关</mi><mi mathvariant="normal">属</mi><mi mathvariant="normal">性</mi><mi mathvariant="normal">。</mi><mi mathvariant="normal">参</mi><mi mathvariant="normal">数</mi><mi mathvariant="normal">“</mi><mo>−</mo><mi>a</mi><mi>l</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">则</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">列</mi><mi mathvariant="normal">出</mi><mi mathvariant="normal">所</mi><mi mathvariant="normal">有</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">详</mi><mi mathvariant="normal">细</mi><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mi mathvariant="normal">与</mi><mi mathvariant="normal">属</mi><mi mathvariant="normal">性</mi><mi mathvariant="normal">（</mi><mi mathvariant="normal">包</mi><mi mathvariant="normal">含</mi><mi mathvariant="normal">隐</mi><mi mathvariant="normal">藏</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">就</mi><mi mathvariant="normal">是</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">名</mi><mi mathvariant="normal">第</mi><mi mathvariant="normal">一</mi><mi mathvariant="normal">个</mi><mi mathvariant="normal">字</mi><mi mathvariant="normal">符</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">“</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">）</mi><mn>2.</mn><mi mathvariant="normal">显</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">每</mi><mi mathvariant="normal">一</mi><mi mathvariant="normal">行</mi><mi mathvariant="normal">会</mi><mi mathvariant="normal">有</mi><mi mathvariant="normal">如</mi><mi mathvariant="normal">下</mi><mi mathvariant="normal">格</mi><mi mathvariant="normal">式</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">例</mi><mi mathvariant="normal">如</mi><mi mathvariant="normal">：</mi><mo>−</mo><mi>r</mi><mi>w</mi><mo>−</mo><mi>r</mi><mi mathvariant="normal">–</mi><mi>r</mi><mi mathvariant="normal">–</mi><mn>1</mn><mi>r</mi><mi>o</mi><mi>o</mi><mi>t</mi><mi>r</mi><mi>o</mi><mi>o</mi><mi>t</mi><mn>42304</mn><mi>S</mi><mi>e</mi><mi>p</mi><mn>418</mn><mo>:</mo><mn>26</mn><mi>i</mi><mi>n</mi><mi>s</mi><mi>t</mi><mi>a</mi><mi>l</mi><mi>l</mi><mi mathvariant="normal">.</mi><mi>l</mi><mi>o</mi><mi>g</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">分</mi><mi mathvariant="normal">别</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">：</mi><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mi mathvariant="normal">连</mi><mi mathvariant="normal">接</mi><mi mathvariant="normal">所</mi><mi mathvariant="normal">有</mi><mi mathvariant="normal">者</mi><mi mathvariant="normal">用</mi><mi mathvariant="normal">户</mi><mi mathvariant="normal">组</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">容</mi><mi mathvariant="normal">量</mi><mi mathvariant="normal">修</mi><mi mathvariant="normal">改</mi><mi mathvariant="normal">日</mi><mi mathvariant="normal">期</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">名</mi><mn>3.</mn><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mo>−</mo><mi>r</mi><mi>w</mi><mo>−</mo><mi>r</mi><mi mathvariant="normal">–</mi><mi>r</mi><mi mathvariant="normal">–</mi><mi mathvariant="normal">中</mi><mi mathvariant="normal">拥</mi><mi mathvariant="normal">有</mi><mn>10</mn><mi mathvariant="normal">个</mi><mi mathvariant="normal">字</mi><mi mathvariant="normal">符</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">分</mi><mi mathvariant="normal">别</mi><mi mathvariant="normal">代</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">如</mi><mi mathvariant="normal">下</mi><mi mathvariant="normal">：</mi><mi mathvariant="normal">第</mi><mn>1</mn><mi mathvariant="normal">个</mi><mi mathvariant="normal">字</mi><mi mathvariant="normal">符</mi><mi mathvariant="normal">代</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">类</mi><mi mathvariant="normal">型</mi><mi mathvariant="normal">。</mi><mi mathvariant="normal">“</mi><mi>d</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">代</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">目</mi><mi mathvariant="normal">录</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">“</mi><mo>−</mo><mi mathvariant="normal">”</mi><mi mathvariant="normal">代</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">“</mi><mi>l</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">代</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">链</mi><mi mathvariant="normal">接</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">（</mi><mi>l</mi><mi>i</mi><mi>n</mi><mi>k</mi><mi>f</mi><mi>i</mi><mi>l</mi><mi>e</mi><mi mathvariant="normal">）</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">“</mi><mi>b</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">设</mi><mi mathvariant="normal">备</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">里</mi><mi mathvariant="normal">面</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">可</mi><mi mathvariant="normal">供</mi><mi mathvariant="normal">存</mi><mi mathvariant="normal">储</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">接</mi><mi mathvariant="normal">口</mi><mi mathvariant="normal">设</mi><mi mathvariant="normal">备</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">“</mi><mi>c</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">设</mi><mi mathvariant="normal">备</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">里</mi><mi mathvariant="normal">面</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">串</mi><mi mathvariant="normal">行</mi><mi mathvariant="normal">端</mi><mi mathvariant="normal">口</mi><mi mathvariant="normal">设</mi><mi mathvariant="normal">备</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">例</mi><mi mathvariant="normal">如</mi><mi mathvariant="normal">鼠</mi><mi mathvariant="normal">标</mi><mi mathvariant="normal">键</mi><mi mathvariant="normal">盘</mi><mi mathvariant="normal">（</mi><mi mathvariant="normal">一</mi><mi mathvariant="normal">次</mi><mi mathvariant="normal">性</mi><mi mathvariant="normal">读</mi><mi mathvariant="normal">取</mi><mi mathvariant="normal">设</mi><mi mathvariant="normal">备</mi><mi mathvariant="normal">）</mi><mi mathvariant="normal">。</mi><mi mathvariant="normal">接</mi><mi mathvariant="normal">下</mi><mi mathvariant="normal">来</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">字</mi><mi mathvariant="normal">符</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">以</mi><mn>3</mn><mi mathvariant="normal">个</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">一</mi><mi mathvariant="normal">组</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">且</mi><mi mathvariant="normal">均</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">“</mi><mi>r</mi><mi>w</mi><mi>x</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">的</mi><mn>3</mn><mi mathvariant="normal">个</mi><mi mathvariant="normal">参</mi><mi mathvariant="normal">数</mi><mi mathvariant="normal">组</mi><mi mathvariant="normal">合</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">“</mi><mi>r</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">可</mi><mi mathvariant="normal">读</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">“</mi><mi>w</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">可</mi><mi mathvariant="normal">写</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">“</mi><mi>x</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">可</mi><mi mathvariant="normal">执</mi><mi mathvariant="normal">行</mi><mi mathvariant="normal">（</mi><mi>e</mi><mi>x</mi><mi>e</mi><mi>c</mi><mi>u</mi><mi>t</mi><mi>e</mi><mi mathvariant="normal">）</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">这</mi><mi mathvariant="normal">三</mi><mi mathvariant="normal">个</mi><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">位</mi><mi mathvariant="normal">置</mi><mi mathvariant="normal">不</mi><mi mathvariant="normal">会</mi><mi mathvariant="normal">改</mi><mi mathvariant="normal">变</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">如</mi><mi mathvariant="normal">果</mi><mi mathvariant="normal">没</mi><mi mathvariant="normal">有</mi><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">则</mi><mi mathvariant="normal">以</mi><mi mathvariant="normal">减</mi><mi mathvariant="normal">号</mi><mi mathvariant="normal">“</mi><mo>−</mo><mi mathvariant="normal">”</mi><mi mathvariant="normal">代</mi><mi mathvariant="normal">替</mi><mi mathvariant="normal">。</mi><mi mathvariant="normal">第</mi><mi mathvariant="normal">一</mi><mi mathvariant="normal">组</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">所</mi><mi mathvariant="normal">有</mi><mi mathvariant="normal">者</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">第</mi><mi mathvariant="normal">二</mi><mi mathvariant="normal">组</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">同</mi><mi mathvariant="normal">用</mi><mi mathvariant="normal">户</mi><mi mathvariant="normal">组</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">第</mi><mi mathvariant="normal">三</mi><mi mathvariant="normal">组</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">其</mi><mi mathvariant="normal">他</mi><mi mathvariant="normal">非</mi><mi mathvariant="normal">本</mi><mi mathvariant="normal">用</mi><mi mathvariant="normal">户</mi><mi mathvariant="normal">组</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mi mathvariant="normal">。</mi><mn>4.2.</mn><mi mathvariant="normal">中</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">“</mi><mi mathvariant="normal">链</mi><mi mathvariant="normal">接</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">有</mi><mi mathvariant="normal">多</mi><mi mathvariant="normal">少</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">链</mi><mi mathvariant="normal">接</mi><mi mathvariant="normal">到</mi><mi mathvariant="normal">此</mi><mi mathvariant="normal">节</mi><mi mathvariant="normal">点</mi><mi mathvariant="normal">（</mi><mi>i</mi><mo>−</mo><mi>n</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi mathvariant="normal">）</mi><mi mathvariant="normal">。</mi><mi mathvariant="normal">每</mi><mi mathvariant="normal">隔</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">都</mi><mi mathvariant="normal">会</mi><mi mathvariant="normal">将</mi><mi mathvariant="normal">它</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mi mathvariant="normal">与</mi><mi mathvariant="normal">属</mi><mi mathvariant="normal">性</mi><mi mathvariant="normal">记</mi><mi mathvariant="normal">录</mi><mi mathvariant="normal">到</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">系</mi><mi mathvariant="normal">统</mi><mi mathvariant="normal">的</mi><mi>i</mi><mo>−</mo><mi>n</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi mathvariant="normal">中</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">每</mi><mi mathvariant="normal">个</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">都</mi><mi mathvariant="normal">会</mi><mi mathvariant="normal">链</mi><mi mathvariant="normal">接</mi><mi mathvariant="normal">到</mi><mi mathvariant="normal">一</mi><mi mathvariant="normal">个</mi><mi>i</mi><mo>−</mo><mi>n</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi mathvariant="normal">。</mi><mi mathvariant="normal">这</mi><mi mathvariant="normal">个</mi><mi mathvariant="normal">属</mi><mi mathvariant="normal">性</mi><mi mathvariant="normal">记</mi><mi mathvariant="normal">录</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">就</mi><mi mathvariant="normal">是</mi><mi mathvariant="normal">有</mi><mi mathvariant="normal">多</mi><mi mathvariant="normal">少</mi><mi mathvariant="normal">个</mi><mi mathvariant="normal">不</mi><mi mathvariant="normal">同</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">名</mi><mi mathvariant="normal">连</mi><mi mathvariant="normal">接</mi><mi mathvariant="normal">到</mi><mi mathvariant="normal">相</mi><mi mathvariant="normal">同</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">一</mi><mi mathvariant="normal">个</mi><mi>i</mi><mo>−</mo><mi>n</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi mathvariant="normal">号</mi><mi mathvariant="normal">码</mi><mi mathvariant="normal">。</mi><mn>5.2.</mn><mi mathvariant="normal">中</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">“</mi><mi mathvariant="normal">修</mi><mi mathvariant="normal">改</mi><mi mathvariant="normal">日</mi><mi mathvariant="normal">期</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">表</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">这</mi><mi mathvariant="normal">个</mi><mi mathvariant="normal">文</mi><mi mathvariant="normal">件</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">创</mi><mi mathvariant="normal">建</mi><mi mathvariant="normal">日</mi><mi mathvariant="normal">期</mi><mi mathvariant="normal">或</mi><mi mathvariant="normal">最</mi><mi mathvariant="normal">近</mi><mi mathvariant="normal">修</mi><mi mathvariant="normal">改</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">日</mi><mi mathvariant="normal">期</mi><mi mathvariant="normal">。</mi><mi mathvariant="normal">如</mi><mi mathvariant="normal">果</mi><mi mathvariant="normal">年</mi><mi mathvariant="normal">份</mi><mi mathvariant="normal">太</mi><mi mathvariant="normal">久</mi><mi mathvariant="normal">则</mi><mi mathvariant="normal">只</mi><mi mathvariant="normal">会</mi><mi mathvariant="normal">显</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">年</mi><mi mathvariant="normal">份</mi><mi mathvariant="normal">。</mi><mi mathvariant="normal">想</mi><mi mathvariant="normal">要</mi><mi mathvariant="normal">显</mi><mi mathvariant="normal">示</mi><mi mathvariant="normal">完</mi><mi mathvariant="normal">整</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">时</mi><mi mathvariant="normal">间</mi><mi mathvariant="normal">格</mi><mi mathvariant="normal">式</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">则</mi><mi mathvariant="normal">可</mi><mi mathvariant="normal">使</mi><mi mathvariant="normal">用</mi><mi mathvariant="normal">如</mi><mi mathvariant="normal">下</mi><mi mathvariant="normal">指</mi><mi mathvariant="normal">令</mi><mi mathvariant="normal">（</mi><mi>l</mi><mi>s</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">参</mi><mi mathvariant="normal">数</mi><mi mathvariant="normal">）</mi><mi mathvariant="normal">：</mi></mrow><annotation encoding="application/x-tex">ls -al，ls是“list”的意思，重点在显示文件的文件名与相关属性。参数“-al”则表示列出所有的文件详细权限与属性（包含隐藏文件，就是文件名第一个字符为“.”的文件）
+2.
+显示的每一行会有如下格式，例如：
+-rw-r–r–        1           root           root          42304          Sep 4 18:26        install.log，分别表示：
+权限          连接        所有者         用户组        文件容量          修改日期             文件名
+3.
+权限-rw-r–r–中拥有10个字符，分别代表如下：
+第1个字符代表文件的类型。“d”代表目录，“-”代表文件，“l”代表链接文件（linkfile），“b”表示设备文件里面的可供存储的接口设备，“c”表示设备文件里面的串行端口设备，例如鼠标键盘（一次性读取设备）。
+接 下来的字符，以3个为一组，且均为“rwx”的3个参数组合，“r”表示可读，“w”表示可写，“x”表示可执行（execute），这三个权限的位置不 会改变，如果没有权限，则以减号“-”代替。第一组为文件所有者的权限，第二组为同用户组的权限，第三组为其他非本用户组的权限。
+4.
+2.中的“链接”表示有多少文件链接到此节点（i-node）。每隔文件都会将它的权限与属性记录到文件系统的i-node中，每个文件都会链接到一个i-node。这个属性记录的就是有多少个不同的文件名连接到相同的一个i-node号码。
+5.
+2.中的“修改日期”表示这个文件的创建日期或最近修改的日期。如果年份太久则只会显示年份。想要显示完整的时间格式，则可使用如下指令（ls的参数）：
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord cjk_fallback">，</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">s</span><span class="mord cjk_fallback">是</span><span class="mord">“</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">i</span><span class="mord mathdefault">s</span><span class="mord mathdefault">t</span><span class="mord">”</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">意</span><span class="mord cjk_fallback">思</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">重</span><span class="mord cjk_fallback">点</span><span class="mord cjk_fallback">在</span><span class="mord cjk_fallback">显</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">名</span><span class="mord cjk_fallback">与</span><span class="mord cjk_fallback">相</span><span class="mord cjk_fallback">关</span><span class="mord cjk_fallback">属</span><span class="mord cjk_fallback">性</span><span class="mord cjk_fallback">。</span><span class="mord cjk_fallback">参</span><span class="mord cjk_fallback">数</span><span class="mord">“</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord">”</span><span class="mord cjk_fallback">则</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">列</span><span class="mord cjk_fallback">出</span><span class="mord cjk_fallback">所</span><span class="mord cjk_fallback">有</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">详</span><span class="mord cjk_fallback">细</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mord cjk_fallback">与</span><span class="mord cjk_fallback">属</span><span class="mord cjk_fallback">性</span><span class="mord cjk_fallback">（</span><span class="mord cjk_fallback">包</span><span class="mord cjk_fallback">含</span><span class="mord cjk_fallback">隐</span><span class="mord cjk_fallback">藏</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">就</span><span class="mord cjk_fallback">是</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">名</span><span class="mord cjk_fallback">第</span><span class="mord cjk_fallback">一</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">字</span><span class="mord cjk_fallback">符</span><span class="mord cjk_fallback">为</span><span class="mord">“</span><span class="mord">.</span><span class="mord">”</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">）</span><span class="mord">2</span><span class="mord">.</span><span class="mord cjk_fallback">显</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">每</span><span class="mord cjk_fallback">一</span><span class="mord cjk_fallback">行</span><span class="mord cjk_fallback">会</span><span class="mord cjk_fallback">有</span><span class="mord cjk_fallback">如</span><span class="mord cjk_fallback">下</span><span class="mord cjk_fallback">格</span><span class="mord cjk_fallback">式</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">例</span><span class="mord cjk_fallback">如</span><span class="mord cjk_fallback">：</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.02691em;">w</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord" style="margin-right:0.02778em;">–</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord" style="margin-right:0.02778em;">–</span><span class="mord">1</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">o</span><span class="mord mathdefault">o</span><span class="mord mathdefault">t</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">o</span><span class="mord mathdefault">o</span><span class="mord mathdefault">t</span><span class="mord">4</span><span class="mord">2</span><span class="mord">3</span><span class="mord">0</span><span class="mord">4</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mord mathdefault">e</span><span class="mord mathdefault">p</span><span class="mord">4</span><span class="mord">1</span><span class="mord">8</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord">2</span><span class="mord">6</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">s</span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord">.</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">分</span><span class="mord cjk_fallback">别</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">：</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mord cjk_fallback">连</span><span class="mord cjk_fallback">接</span><span class="mord cjk_fallback">所</span><span class="mord cjk_fallback">有</span><span class="mord cjk_fallback">者</span><span class="mord cjk_fallback">用</span><span class="mord cjk_fallback">户</span><span class="mord cjk_fallback">组</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">容</span><span class="mord cjk_fallback">量</span><span class="mord cjk_fallback">修</span><span class="mord cjk_fallback">改</span><span class="mord cjk_fallback">日</span><span class="mord cjk_fallback">期</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">名</span><span class="mord">3</span><span class="mord">.</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.02691em;">w</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord" style="margin-right:0.02778em;">–</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord" style="margin-right:0.02778em;">–</span><span class="mord cjk_fallback">中</span><span class="mord cjk_fallback">拥</span><span class="mord cjk_fallback">有</span><span class="mord">1</span><span class="mord">0</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">字</span><span class="mord cjk_fallback">符</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">分</span><span class="mord cjk_fallback">别</span><span class="mord cjk_fallback">代</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">如</span><span class="mord cjk_fallback">下</span><span class="mord cjk_fallback">：</span><span class="mord cjk_fallback">第</span><span class="mord">1</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">字</span><span class="mord cjk_fallback">符</span><span class="mord cjk_fallback">代</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">类</span><span class="mord cjk_fallback">型</span><span class="mord cjk_fallback">。</span><span class="mord">“</span><span class="mord mathdefault">d</span><span class="mord">”</span><span class="mord cjk_fallback">代</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">目</span><span class="mord cjk_fallback">录</span><span class="mord cjk_fallback">，</span><span class="mord">“</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord">”</span><span class="mord cjk_fallback">代</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">，</span><span class="mord">“</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord">”</span><span class="mord cjk_fallback">代</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">链</span><span class="mord cjk_fallback">接</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">（</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mord mathdefault">i</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">e</span><span class="mord cjk_fallback">）</span><span class="mord cjk_fallback">，</span><span class="mord">“</span><span class="mord mathdefault">b</span><span class="mord">”</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">设</span><span class="mord cjk_fallback">备</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">里</span><span class="mord cjk_fallback">面</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">可</span><span class="mord cjk_fallback">供</span><span class="mord cjk_fallback">存</span><span class="mord cjk_fallback">储</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">接</span><span class="mord cjk_fallback">口</span><span class="mord cjk_fallback">设</span><span class="mord cjk_fallback">备</span><span class="mord cjk_fallback">，</span><span class="mord">“</span><span class="mord mathdefault">c</span><span class="mord">”</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">设</span><span class="mord cjk_fallback">备</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">里</span><span class="mord cjk_fallback">面</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">串</span><span class="mord cjk_fallback">行</span><span class="mord cjk_fallback">端</span><span class="mord cjk_fallback">口</span><span class="mord cjk_fallback">设</span><span class="mord cjk_fallback">备</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">例</span><span class="mord cjk_fallback">如</span><span class="mord cjk_fallback">鼠</span><span class="mord cjk_fallback">标</span><span class="mord cjk_fallback">键</span><span class="mord cjk_fallback">盘</span><span class="mord cjk_fallback">（</span><span class="mord cjk_fallback">一</span><span class="mord cjk_fallback">次</span><span class="mord cjk_fallback">性</span><span class="mord cjk_fallback">读</span><span class="mord cjk_fallback">取</span><span class="mord cjk_fallback">设</span><span class="mord cjk_fallback">备</span><span class="mord cjk_fallback">）</span><span class="mord cjk_fallback">。</span><span class="mord cjk_fallback">接</span><span class="mord cjk_fallback">下</span><span class="mord cjk_fallback">来</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">字</span><span class="mord cjk_fallback">符</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">以</span><span class="mord">3</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">一</span><span class="mord cjk_fallback">组</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">且</span><span class="mord cjk_fallback">均</span><span class="mord cjk_fallback">为</span><span class="mord">“</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.02691em;">w</span><span class="mord mathdefault">x</span><span class="mord">”</span><span class="mord cjk_fallback">的</span><span class="mord">3</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">参</span><span class="mord cjk_fallback">数</span><span class="mord cjk_fallback">组</span><span class="mord cjk_fallback">合</span><span class="mord cjk_fallback">，</span><span class="mord">“</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord">”</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">可</span><span class="mord cjk_fallback">读</span><span class="mord cjk_fallback">，</span><span class="mord">“</span><span class="mord mathdefault" style="margin-right:0.02691em;">w</span><span class="mord">”</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">可</span><span class="mord cjk_fallback">写</span><span class="mord cjk_fallback">，</span><span class="mord">“</span><span class="mord mathdefault">x</span><span class="mord">”</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">可</span><span class="mord cjk_fallback">执</span><span class="mord cjk_fallback">行</span><span class="mord cjk_fallback">（</span><span class="mord mathdefault">e</span><span class="mord mathdefault">x</span><span class="mord mathdefault">e</span><span class="mord mathdefault">c</span><span class="mord mathdefault">u</span><span class="mord mathdefault">t</span><span class="mord mathdefault">e</span><span class="mord cjk_fallback">）</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">这</span><span class="mord cjk_fallback">三</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">位</span><span class="mord cjk_fallback">置</span><span class="mord cjk_fallback">不</span><span class="mord cjk_fallback">会</span><span class="mord cjk_fallback">改</span><span class="mord cjk_fallback">变</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">如</span><span class="mord cjk_fallback">果</span><span class="mord cjk_fallback">没</span><span class="mord cjk_fallback">有</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">则</span><span class="mord cjk_fallback">以</span><span class="mord cjk_fallback">减</span><span class="mord cjk_fallback">号</span><span class="mord">“</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord">”</span><span class="mord cjk_fallback">代</span><span class="mord cjk_fallback">替</span><span class="mord cjk_fallback">。</span><span class="mord cjk_fallback">第</span><span class="mord cjk_fallback">一</span><span class="mord cjk_fallback">组</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">所</span><span class="mord cjk_fallback">有</span><span class="mord cjk_fallback">者</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">第</span><span class="mord cjk_fallback">二</span><span class="mord cjk_fallback">组</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">同</span><span class="mord cjk_fallback">用</span><span class="mord cjk_fallback">户</span><span class="mord cjk_fallback">组</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">第</span><span class="mord cjk_fallback">三</span><span class="mord cjk_fallback">组</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">其</span><span class="mord cjk_fallback">他</span><span class="mord cjk_fallback">非</span><span class="mord cjk_fallback">本</span><span class="mord cjk_fallback">用</span><span class="mord cjk_fallback">户</span><span class="mord cjk_fallback">组</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mord cjk_fallback">。</span><span class="mord">4</span><span class="mord">.</span><span class="mord">2</span><span class="mord">.</span><span class="mord cjk_fallback">中</span><span class="mord cjk_fallback">的</span><span class="mord">“</span><span class="mord cjk_fallback">链</span><span class="mord cjk_fallback">接</span><span class="mord">”</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">有</span><span class="mord cjk_fallback">多</span><span class="mord cjk_fallback">少</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">链</span><span class="mord cjk_fallback">接</span><span class="mord cjk_fallback">到</span><span class="mord cjk_fallback">此</span><span class="mord cjk_fallback">节</span><span class="mord cjk_fallback">点</span><span class="mord cjk_fallback">（</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">n</span><span class="mord mathdefault">o</span><span class="mord mathdefault">d</span><span class="mord mathdefault">e</span><span class="mord cjk_fallback">）</span><span class="mord cjk_fallback">。</span><span class="mord cjk_fallback">每</span><span class="mord cjk_fallback">隔</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">都</span><span class="mord cjk_fallback">会</span><span class="mord cjk_fallback">将</span><span class="mord cjk_fallback">它</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mord cjk_fallback">与</span><span class="mord cjk_fallback">属</span><span class="mord cjk_fallback">性</span><span class="mord cjk_fallback">记</span><span class="mord cjk_fallback">录</span><span class="mord cjk_fallback">到</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">系</span><span class="mord cjk_fallback">统</span><span class="mord cjk_fallback">的</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">n</span><span class="mord mathdefault">o</span><span class="mord mathdefault">d</span><span class="mord mathdefault">e</span><span class="mord cjk_fallback">中</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">每</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">都</span><span class="mord cjk_fallback">会</span><span class="mord cjk_fallback">链</span><span class="mord cjk_fallback">接</span><span class="mord cjk_fallback">到</span><span class="mord cjk_fallback">一</span><span class="mord cjk_fallback">个</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">n</span><span class="mord mathdefault">o</span><span class="mord mathdefault">d</span><span class="mord mathdefault">e</span><span class="mord cjk_fallback">。</span><span class="mord cjk_fallback">这</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">属</span><span class="mord cjk_fallback">性</span><span class="mord cjk_fallback">记</span><span class="mord cjk_fallback">录</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">就</span><span class="mord cjk_fallback">是</span><span class="mord cjk_fallback">有</span><span class="mord cjk_fallback">多</span><span class="mord cjk_fallback">少</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">不</span><span class="mord cjk_fallback">同</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">名</span><span class="mord cjk_fallback">连</span><span class="mord cjk_fallback">接</span><span class="mord cjk_fallback">到</span><span class="mord cjk_fallback">相</span><span class="mord cjk_fallback">同</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">一</span><span class="mord cjk_fallback">个</span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">n</span><span class="mord mathdefault">o</span><span class="mord mathdefault">d</span><span class="mord mathdefault">e</span><span class="mord cjk_fallback">号</span><span class="mord cjk_fallback">码</span><span class="mord cjk_fallback">。</span><span class="mord">5</span><span class="mord">.</span><span class="mord">2</span><span class="mord">.</span><span class="mord cjk_fallback">中</span><span class="mord cjk_fallback">的</span><span class="mord">“</span><span class="mord cjk_fallback">修</span><span class="mord cjk_fallback">改</span><span class="mord cjk_fallback">日</span><span class="mord cjk_fallback">期</span><span class="mord">”</span><span class="mord cjk_fallback">表</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">这</span><span class="mord cjk_fallback">个</span><span class="mord cjk_fallback">文</span><span class="mord cjk_fallback">件</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">创</span><span class="mord cjk_fallback">建</span><span class="mord cjk_fallback">日</span><span class="mord cjk_fallback">期</span><span class="mord cjk_fallback">或</span><span class="mord cjk_fallback">最</span><span class="mord cjk_fallback">近</span><span class="mord cjk_fallback">修</span><span class="mord cjk_fallback">改</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">日</span><span class="mord cjk_fallback">期</span><span class="mord cjk_fallback">。</span><span class="mord cjk_fallback">如</span><span class="mord cjk_fallback">果</span><span class="mord cjk_fallback">年</span><span class="mord cjk_fallback">份</span><span class="mord cjk_fallback">太</span><span class="mord cjk_fallback">久</span><span class="mord cjk_fallback">则</span><span class="mord cjk_fallback">只</span><span class="mord cjk_fallback">会</span><span class="mord cjk_fallback">显</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">年</span><span class="mord cjk_fallback">份</span><span class="mord cjk_fallback">。</span><span class="mord cjk_fallback">想</span><span class="mord cjk_fallback">要</span><span class="mord cjk_fallback">显</span><span class="mord cjk_fallback">示</span><span class="mord cjk_fallback">完</span><span class="mord cjk_fallback">整</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">时</span><span class="mord cjk_fallback">间</span><span class="mord cjk_fallback">格</span><span class="mord cjk_fallback">式</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">则</span><span class="mord cjk_fallback">可</span><span class="mord cjk_fallback">使</span><span class="mord cjk_fallback">用</span><span class="mord cjk_fallback">如</span><span class="mord cjk_fallback">下</span><span class="mord cjk_fallback">指</span><span class="mord cjk_fallback">令</span><span class="mord cjk_fallback">（</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">s</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">参</span><span class="mord cjk_fallback">数</span><span class="mord cjk_fallback">）</span><span class="mord cjk_fallback">：</span></span></span></span>ls -l –full-time<br>
+6.<br>
+修改系统默认语言为英文，可以管理员身份修改该系统配置文件/etc/sysconfig/i18n，利用nano编译器进行修改，LANG=en_US。<br>
+#nano /etc/sysconfig/i18n，将LANG后面改为“en_US……”<br>
+7.<br>
+对于目录的权限如果是“-drwxr-xr–”，则others仍然不能进入本目录，需要有x权限才能进入。<br>
+如何改变文件属性与权限<br>
+1.<br>
+chgrp，改变文件所属用户组；<br>
+chown，改变文件所有者；<br>
+chmod，改变文件的权限。<br>
+2.<br>
+chgrp就是change group的简称，使用该指令时，要被改变的组名必须在/etc/group文件内存在才行。<br>
+#chgrp [-R] group filename(or dirname)，其中R表示进行递归（recursive）的持续更改，也即连同子目录下的所有文件、目录。所以当修改一个目录中所有文件的用户组（所有者与权限也一样）时，要加上-R。<br>
+例如将文件install.log改到users用户组<br>
+<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#039;EOF&#039;, got &#039;#&#039; at position 52: …ange owner的简称。
+#̲chown [-R] user…">chgrp users install.log
+3.
+chown就是change owner的简称。
+#chown [-R] user filename(or dirname)，改变file的文件所有者为user。
+#chown [-R] .group filename(or dirname)，改变file的用户组为group（注意加点）。
+#chown [-R] user.group filename(or dirname)，改变file的文件所有者为user，用户组为group。为避免“.”引起的系统误判，通常用一下命令表示该句：
+#chown [-R] user:group filename(or dirname)。
+4.
+复制文件给其他人，复制命令：
+</span>cp [-option] [source file or dir] [target file or dir]<br>
+复制行为（cp）会复制执行者的属性与权限，所以即使复制到他人用户组仍然无法使用，所以这时必须修改该权限。<br>
+5.<br>
+chmod就是change mode bits的简称。<br>
+数字类型改变文件权限：<br>
+#chmod [-R] xyz fileordir，其中x代表owner权限，y代表group权限，z代表others权限。<br>
+r=4，w=2，x=1，上面三种身份的权限是r+w+x的和，如果没有相应的权限，则值为0。<br>
+例如：install.log文件，owner=rwx=4+2+1=7，group=rwx=4+2+1=7，others=—=0+0+0=0，所以这个文件的将改变权限值为770：<br>
+#chmod 770 install.log。<br>
+6.<br>
+符号类型改变文件权限<br>
+我们可以用u，g，o三个参数来代表user，group，others 3种身份的权限。<br>
+a代表all，也即全部的身份。<br>
+读写的权限就可以写成r，w，x。<br>
++，-，=分别代表加入，出去，设置一个权限。<br>
+加入要设置一个文件的权限成“-rwxr-xr-x，指令为：<br>
+#chmod u=rwx,go=rx filename，注意加上那个逗号。<br>
+要给一个文件的全部身份加上x权限，则指令为：<br>
+#chmod a+x filename。<br>
+目录与文件的权限意义<br>
+1.<br>
+权限对文件的作用：<br>
+文件是实际含有数据的地方，包括一般文本文件、数据库内容文件、二进制可执行文件（binary program）等。<br>
+r（read）：可读取此文件实际内容。<br>
+w（write）：可以编辑、新增或者是修改该文件的内容（不能删除该文件）。<br>
+x（execute）：可以被系统执行。<br>
+2.<br>
+权限对目录的作用：<br>
+r（read contemts in directory）可读取目录结构列表，可利用ls命令将该目录结构列表中的文件名显示出来（仅能显示文件名）。<br>
+w（modify contents of directory）可更改目录结构列表，如新建、删除、重命名、转移文件或目录。<br>
+x（access directory）可进入该目录成为工作目录（就是目前所在的目录），当登陆Linux时所在的~（即主文件夹）就是当前工作目录。<br>
+3.<br>
+工作目录对于命令的执行非常重要，如果对一个目录不具有x权限，则无法使该目录称为工作目录，也就无法执行该目录下的任何命令。<br>
+要开放目录给任何人浏览时，应该至少给予r和x的权限，但w的权限不可以随便给。<br>
+4.<br>
+如果具有对一个目录的w权限，那么该目录下的任何文件都可以删除，不管要删除的文件的所有者和用户组是什么。<br>
+5.<br>
+#cd /tmp，切换工作目录到/tmp<br>
+#mkdir testing，在以上目录下建立testing文件夹<br>
+#chmod 744 testing，更改以上创建的testing文件夹的权限为drwxr–r–<br>
+#touch testing/testing1，在testing文件夹中新建空的文件testing1<br>
+#ls -ald testing testing/testing1，列出上面创建的文件夹和文件的信息（ls的-a参数表示all，即显示所有文件，包括隐藏文件；-l参数表示 long，显示长信息格式，即显示用户组，所有者，修改日期等等；-d参数表示将目录象文件一样显示，而不是显示其下的文件）。<br>
+可以看到testing目录，和testing1文件的所有者和用户组都是root。<br>
+下面来用自己的账号进行一些操作。<br>
+6.<br>
+#su – SF_Chipan，切换身份成为SF_Chipan<br>
+<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>d</mi><mi mathvariant="normal">/</mi><mi>t</mi><mi>m</mi><mi>p</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">进</mi><mi mathvariant="normal">入</mi><mi mathvariant="normal">/</mi><mi>t</mi><mi>m</mi><mi>p</mi><mi mathvariant="normal">成</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">工</mi><mi mathvariant="normal">作</mi><mi mathvariant="normal">目</mi><mi mathvariant="normal">录</mi></mrow><annotation encoding="application/x-tex">cd /tmp，进入/tmp成为工作目录
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">d</span><span class="mord">/</span><span class="mord mathdefault">t</span><span class="mord mathdefault">m</span><span class="mord mathdefault">p</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">进</span><span class="mord cjk_fallback">入</span><span class="mord">/</span><span class="mord mathdefault">t</span><span class="mord mathdefault">m</span><span class="mord mathdefault">p</span><span class="mord cjk_fallback">成</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">工</span><span class="mord cjk_fallback">作</span><span class="mord cjk_fallback">目</span><span class="mord cjk_fallback">录</span></span></span></span>ls -l testing，列出testing目录中的内容，因为刚才在5.中设置了testing目录对others的权限为r，所以这里就会显示文件名为testing1的文件，其他都是问号。<br>
+<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>d</mi><mi>t</mi><mi>e</mi><mi>s</mi><mi>i</mi><mi>n</mi><mi>g</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">这</mi><mi mathvariant="normal">时</mi><mi mathvariant="normal">候</mi><mi mathvariant="normal">因</mi><mi mathvariant="normal">为</mi><mi>S</mi><msub><mi>F</mi><mi>C</mi></msub><mi>h</mi><mi>i</mi><mi>p</mi><mi>a</mi><mi>n</mi><mi mathvariant="normal">身</mi><mi mathvariant="normal">份</mi><mi mathvariant="normal">对</mi><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi><mi>i</mi><mi>n</mi><mi>g</mi><mi mathvariant="normal">目</mi><mi mathvariant="normal">录</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">权</mi><mi mathvariant="normal">限</mi><mi mathvariant="normal">只</mi><mi mathvariant="normal">是</mi><mi>r</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">没</mi><mi mathvariant="normal">有</mi><mi>x</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">所</mi><mi mathvariant="normal">以</mi><mi mathvariant="normal">不</mi><mi mathvariant="normal">能</mi><mi mathvariant="normal">使</mi><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi><mi>i</mi><mi>n</mi><mi>g</mi><mi mathvariant="normal">成</mi><mi mathvariant="normal">为</mi><mi mathvariant="normal">工</mi><mi mathvariant="normal">作</mi><mi mathvariant="normal">目</mi><mi mathvariant="normal">录</mi><mi mathvariant="normal">。</mi><mn>7.</mn><mi mathvariant="normal">使</mi><mi mathvariant="normal">用</mi><mi mathvariant="normal">“</mi><mi>s</mi><mi>u</mi><mi mathvariant="normal">–</mi><mi mathvariant="normal">”</mi><mi mathvariant="normal">登</mi><mi mathvariant="normal">陆</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">账</mi><mi mathvariant="normal">户</mi><mi mathvariant="normal">，</mi><mi mathvariant="normal">当</mi><mi mathvariant="normal">使</mi><mi mathvariant="normal">用</mi></mrow><annotation encoding="application/x-tex">cd tesing，这时候因为SF_Chipan身份对testing目录的权限只是r，没有x，所以不能使testing成为工作目录。
+7.
+使用“su – ”登陆的账户，当使用</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">d</span><span class="mord mathdefault">t</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">这</span><span class="mord cjk_fallback">时</span><span class="mord cjk_fallback">候</span><span class="mord cjk_fallback">因</span><span class="mord cjk_fallback">为</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault">h</span><span class="mord mathdefault">i</span><span class="mord mathdefault">p</span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord cjk_fallback">身</span><span class="mord cjk_fallback">份</span><span class="mord cjk_fallback">对</span><span class="mord mathdefault">t</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">t</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord cjk_fallback">目</span><span class="mord cjk_fallback">录</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">权</span><span class="mord cjk_fallback">限</span><span class="mord cjk_fallback">只</span><span class="mord cjk_fallback">是</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">没</span><span class="mord cjk_fallback">有</span><span class="mord mathdefault">x</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">所</span><span class="mord cjk_fallback">以</span><span class="mord cjk_fallback">不</span><span class="mord cjk_fallback">能</span><span class="mord cjk_fallback">使</span><span class="mord mathdefault">t</span><span class="mord mathdefault">e</span><span class="mord mathdefault">s</span><span class="mord mathdefault">t</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord cjk_fallback">成</span><span class="mord cjk_fallback">为</span><span class="mord cjk_fallback">工</span><span class="mord cjk_fallback">作</span><span class="mord cjk_fallback">目</span><span class="mord cjk_fallback">录</span><span class="mord cjk_fallback">。</span><span class="mord">7</span><span class="mord">.</span><span class="mord cjk_fallback">使</span><span class="mord cjk_fallback">用</span><span class="mord">“</span><span class="mord mathdefault">s</span><span class="mord mathdefault">u</span><span class="mord" style="margin-right:0.02778em;">–</span><span class="mord">”</span><span class="mord cjk_fallback">登</span><span class="mord cjk_fallback">陆</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">账</span><span class="mord cjk_fallback">户</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">当</span><span class="mord cjk_fallback">使</span><span class="mord cjk_fallback">用</span></span></span></span>exit退出时，是退回使用“su – ”之前的账户。如果使用“su – ”登陆root账户，需要提供密码，而root账户登陆到一般账户，则不需要提供密码。<br>
+8.<br>
+可以是用rm命令删除testing1文件：<br>
+#cd /tmp/testing<br>
+#rm testing1<br>
+Linux文件种类与扩展名<br>
+1.<br>
+文件种类：<br>
+普通文件（regular file）：[-]<br>
+纯文本文件（ASCⅡ）：Linux中最多的一种文件类型。可以执行下列命令来查看一个隐藏文件：<br>
+$cat ~/.bashrc，cat是将一个文件内容读出来的命令。<br>
+二进制文件（binary）：Linux中的可执行文件就是这种格式的（scripts、文字批处理文件不算），.bashrc就是这种格式。<br>
+目录（directory）：[d]<br>
+链接文件（link）：[l]，有点类似windows下的快捷方式。<br>
+设 备与设备文件（device）通常分为一下两种：块（block）设备文件，[ d]，就是一些存储数据以提供系统随机访问的接口设备，如硬盘等。可以随机地在硬盘的不同块读写，这种设备就是成组设备；字符（character）设备 文件，就是一些串行端口的接口设备，如键盘鼠标，特点是“一次性读取”，不能够阶段输出，比如鼠标不可能跳到另一个地方，只能划过去。<br>
+套接字（sockets）：[s]，通常被用在网络上的数据连接。我们可以启动一个程序来监听客户端的请求，而客户端就可以通过这个socket来进行书序的通信。通常在/var/run这个目录中就能看到。<br>
+管道（FIFO，pipe）：[p]，主要目的在解决多一个程序同时访问一个文件所造成的错误问题。FIFO是first-in-first-out的缩写。<br>
+上面的套接字和管道都与进程比较有关，可以通过man  fifo及man socket来查阅。<br>
+2.<br>
+一个Linux文件能不能被执行，与它的第一列的10个属性有关，与文件名一点关系都没有。<br>
+3.<br>
+x权限代表这个文件具有可执行的能力，但能不能执行成功，要看该文件的内容。<br>
+4.<br>
+我们希望可以通过扩展名了解该文件时什么东西，所以还是会使用适当的扩展名来表示该文件是什么种类的。<br>
+5.<br>
+*.sh：脚本或批处理文件（scripts），因为批处理文件用shell写成的，<a href="http://xn--onqp9jw5hcex61achr5v.sh" target="_blank" rel="noopener">所以扩展名就是.sh</a>。<br>
+<em>Z、</em>.tar、<em>tar.gz、<em>zip、</em>.tgz：经过打包的压缩文件。由于不同的压缩软件而取其相关的扩展名。<br>
+<em>.html、</em>.php：网页相关文件，分别代表HTML语法与PHP语法的网页文件。.html的文件可以使用网页浏览器来直接启动；.php的文件，可以通过客户端的浏览器来服务端浏览，以得到运算后的网页结果。<br>
+6.<br>
+从网络上传送到你的Linux系统中，文件的属性与权限可能是会改变的。<br>
+7.<br>
+在Linux下，使用默认的Ext2/Ext3文件系统时，针对文件的文件名长度限制为：单一文件或目录的最大容许文件名为255个字符；包含完整路径名称及目录（/）的完整文件名为4096个字符。<br>
+8.<br>
+由于Linux在文字界面下的一些命令操作的关系，在设置文件名时，最好能避免一些特殊的字符，如：</em>?&gt;&lt;;&amp;![]|’”`(){}。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://jinyongzhu.github.io/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/" title="CentOS的文件权限与目录配置" target="_blank" rel="external">https://jinyongzhu.github.io/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">JinYongzhu</span><small class="ml-1x">Web设计开发 &amp; 服务器运维</small></a></h3>
+        <div>Web设计、开发，服务器运维；计算机技术爱好者，和广大代码爱好者共同学习、努力和进步。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NzYyOS8yNDEyNw==">
+        <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+      </div>    
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2019/1122/nginx-php-fpm%E5%87%BA%E7%8E%B0502-bad-gateway%E9%94%99%E8%AF%AF%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" title="nginx+php-fpm出现502 bad gateway错误解决方法"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2019/1122/SHELL%E4%B8%AD%E5%90%84%E7%A7%8D%E6%8B%AC%E5%8F%B7%E7%9A%84%E4%BD%9C%E7%94%A8-%E3%80%81-%E3%80%81-%E3%80%81-%E3%80%81/" title="SHELL中各种括号的作用()、(())、[]、[[]]、{}"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+<script defer type="text/javascript">
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+
+    if (typeof LivereTower === 'function') { return; }
+
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>VIM命令使用大全 | JinYongzhu - Web设计开发 &amp;amp 服务器运维</title>
+  <meta name="description" content="以:和&#x2F;开头的命令都有历史纪录，可以首先键入:或&#x2F;然后按上下箭头来选择某个历史命令。 启动vim 在命令行窗口中输入以下命令即可 vim 直接启动vim vim filename 打开vim并创建名为filename的文件 文件命令 打开单个文件 vim file 同时打开多个文件 vim file1 file2 file3 … 在vim窗口中打开一个新文件 :open file 在新窗口中打开文">
+<meta name="keywords" content="Linux,vim">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VIM命令使用大全">
+<meta property="og:url" content="https:&#x2F;&#x2F;jinyongzhu.github.io&#x2F;2019&#x2F;1122&#x2F;VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8&#x2F;index.html">
+<meta property="og:site_name" content="技术博客 - Hexo">
+<meta property="og:description" content="以:和&#x2F;开头的命令都有历史纪录，可以首先键入:或&#x2F;然后按上下箭头来选择某个历史命令。 启动vim 在命令行窗口中输入以下命令即可 vim 直接启动vim vim filename 打开vim并创建名为filename的文件 文件命令 打开单个文件 vim file 同时打开多个文件 vim file1 file2 file3 … 在vim窗口中打开一个新文件 :open file 在新窗口中打开文">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-22T03:03:15.909Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://jinyongzhu.github.io/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="技术博客 - Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">JinYongzhu</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web设计开发 &amp; 服务器运维</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanjing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎大家来到本博客进行技术的交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/">CentOS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/">CentOS 7</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/LNMP/">LNMP</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/DDoS/">DDoS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Nginx/">Nginx</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS/" rel="tag">CentOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-7/" rel="tag">CentOS 7</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LNMP/" rel="tag">LNMP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/" rel="tag">Python</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/CentOS/" style="font-size: 13px;">CentOS</a> <a href="/tags/CentOS-7/" style="font-size: 13.33px;">CentOS 7</a> <a href="/tags/DDoS/" style="font-size: 13px;">DDoS</a> <a href="/tags/Git/" style="font-size: 13px;">Git</a> <a href="/tags/LNMP/" style="font-size: 13px;">LNMP</a> <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 13.67px;">Nginx</a> <a href="/tags/Python/" style="font-size: 13px;">Python</a> <a href="/tags/shell/" style="font-size: 13px;">shell</a> <a href="/tags/vim/" style="font-size: 13px;">vim</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">13</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/GET-%E5%92%8C-POST-%E5%88%B0%E5%BA%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="title">GET 和 POST 到底有什么区别？</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:13:39.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/Nginx/">Nginx</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/nginx-php-fpm%E5%87%BA%E7%8E%B0502-bad-gateway%E9%94%99%E8%AF%AF%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" class="title">nginx+php-fpm出现502 bad gateway错误解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:08:45.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/CentOS/">CentOS</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/" class="title">CentOS的文件权限与目录配置</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:04:53.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/shell/">shell</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/SHELL%E4%B8%AD%E5%90%84%E7%A7%8D%E6%8B%AC%E5%8F%B7%E7%9A%84%E4%BD%9C%E7%94%A8-%E3%80%81-%E3%80%81-%E3%80%81-%E3%80%81/" class="title">SHELL中各种括号的作用()、(())、[]、[[]]、{}</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:03:44.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/vim/">vim</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/" class="title">VIM命令使用大全</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:02:23.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-VIM命令使用大全" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      VIM命令使用大全
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/" class="article-date">
+	  <time datetime="2019-11-22T03:02:23.000Z" itemprop="datePublished">2019-11-22</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>►<a class="article-category-link" href="/categories/Linux/vim/">vim</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/Linux/" rel="tag">Linux</a>, <a class="article-tag-link" href="/tags/vim/" rel="tag">vim</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>以:和/开头的命令都有历史纪录，可以首先键入:或/然后按上下箭头来选择某个历史命令。<br>
+启动vim<br>
+在命令行窗口中输入以下命令即可<br>
+vim 直接启动vim<br>
+vim filename 打开vim并创建名为filename的文件<br>
+文件命令<br>
+打开单个文件<br>
+vim file<br>
+同时打开多个文件<br>
+vim file1 file2 file3 …<br>
+在vim窗口中打开一个新文件<br>
+:open file<br>
+在新窗口中打开文件<br>
+:split file<br>
+切换到下一个文件<br>
+:bn<br>
+切换到上一个文件<br>
+:bp<br>
+查看当前打开的文件列表，当前正在编辑的文件会用[]括起来。<br>
+:args<br>
+打开远程文件，比如ftp或者share folder<br>
+:e <a href="ftp://192.168.10.76/abc.txt" target="_blank" rel="noopener">ftp://192.168.10.76/abc.txt</a><br>
+:e \qadrive\test\1.txt<br>
+vim的模式<br>
+正常模式（按Esc或Ctrl+[进入） 左下角显示文件名或为空<br>
+插入模式（按i键进入） 左下角显示–INSERT–<br>
+可视模式（不知道如何进入） 左下角显示–VISUAL–<br>
+导航命令<br>
+% 括号匹配<br>
+插入命令<br>
+i 在当前位置生前插入<br>
+I 在当前行首插入<br>
+a 在当前位置后插入<br>
+A 在当前行尾插入<br>
+o 在当前行之后插入一行<br>
+O 在当前行之前插入一行<br>
+查找命令<br>
+/text　　查找text，按n健查找下一个，按N健查找前一个。<br>
+?text　　查找text，反向查找，按n健查找下一个，按N健查找前一个。<br>
+vim中有一些特殊字符在查找时需要转义　　.*[]^%/?~<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#039;EOF&#039;, got &#039;#&#039; at position 92: …可以将光标移动到该词上，按*或#̲键即可以该单词进行搜索，相当于…">
+:set ignorecase　　忽略大小写的查找
+:set noignorecase　　不忽略大小写的查找
+查找很长的词，如果一个词很长，键入麻烦，可以将光标移动到该词上，按*或#键即可以该单词进行搜索，相当于/搜索。而#命令相当于?搜索。
+:set hlsearch　　高亮搜索结果，所有结果都高亮显示，而不是只显示一个匹配。
+:set nohlsearch　　关闭高亮搜索显示
+:nohlsearch　　关闭当前的高亮显示，如果再次搜索或者按下n或N键，则会再次高亮。
+:set incsearch　　逐步搜索模式，对当前键入的字符进行搜索而不必等待键入完成。
+:set wrapscan　　重新搜索，在搜索到文件头或尾时，返回继续搜索，默认开启。
+替换命令
+ra 将当前字符替换为a，当期字符即光标所在字符。
+s/old/new/ 用old替换new，替换当前行的第一个匹配
+s/old/new/g 用old替换new，替换当前行的所有匹配
+%s/old/new/ 用old替换new，替换所有行的第一个匹配
+%s/old/new/g 用old替换new，替换整个文件的所有匹配
+:10,20 s/^/    /g 在第10行知第20行每行前面加四个空格，用于缩进。
+ddp 交换光标所在行和其下紧邻的一行。
+移动命令
+h 左移一个字符
+l 右移一个字符，这个命令很少用，一般用w代替。
+k 上移一个字符
+j 下移一个字符
+以上四个命令可以配合数字使用，比如20j就是向下移动20行，5h就是向左移动5个字符，在Vim中，很多命令都可以配合数字使用，比如删除10个字符10x，在当前位置后插入3个！，3a！&lt;Esc&gt;，这里的Esc是必须的，否则命令不生效。
+w 向前移动一个单词（光标停在单词首部），如果已到行尾，则转至下一行行首。此命令快，可以代替l命令。
+b 向后移动一个单词 2b 向后移动2个单词
+e，同w，只不过是光标停在单词尾部
+ge，同b，光标停在单词尾部。
+^ 移动到本行第一个非空白字符上。
+0（数字0）移动到本行第一个字符上，
+&lt;HOME&gt; 移动到本行第一个字符。同0健。
+</span> 移动到行尾 3$ 移动到下面3行的行尾<br>
+gg 移动到文件头。 = [[<br>
+G（shift + g） 移动到文件尾。 = ]]<br>
+f（find）命令也可以用于移动，fx将找到光标后第一个为x的字符，3fd将找到第三个为d的字符。<br>
+F 同f，反向查找。<br>
+跳到指定行，冒号+行号，回车，比如跳到240行就是 :240回车。另一个方法是行号+G，比如230G跳到230行。<br>
+Ctrl + e 向下滚动一行<br>
+Ctrl + y 向上滚动一行<br>
+Ctrl + d 向下滚动半屏<br>
+Ctrl + u 向上滚动半屏<br>
+Ctrl + f 向下滚动一屏<br>
+Ctrl + b 向上滚动一屏<br>
+撤销和重做<br>
+u 撤销（Undo）<br>
+U 撤销对整行的操作<br>
+Ctrl + r 重做（Redo），即撤销的撤销。<br>
+删除命令<br>
+x 删除当前字符<br>
+3x 删除当前光标开始向后三个字符<br>
+X 删除当前字符的前一个字符。X=dh<br>
+dl 删除当前字符， dl=x<br>
+dh 删除前一个字符<br>
+dd 删除当前行<br>
+dj 删除上一行<br>
+dk 删除下一行<br>
+10d 删除当前行开始的10行。<br>
+D 删除当前字符至行尾。D=d<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi></mrow><annotation encoding="application/x-tex">
+d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span></span></span></span> 删除当前字符之后的所有字符（本行）<br>
+kdgg 删除当前行之前所有行（不包括当前行）<br>
+jdG（jd shift + g）   删除当前行之后所有行（不包括当前行）<br>
+:1,10d 删除1-10行<br>
+:11,<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mi mathvariant="normal">删</mi><mi mathvariant="normal">除</mi><mn>11</mn><mi mathvariant="normal">行</mi><mi mathvariant="normal">及</mi><mi mathvariant="normal">以</mi><mi mathvariant="normal">后</mi><mi mathvariant="normal">所</mi><mi mathvariant="normal">有</mi><mi mathvariant="normal">的</mi><mi mathvariant="normal">行</mi><mo>:</mo><mn>1</mn><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">d 删除11行及以后所有的行
+:1,</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span><span class="mord cjk_fallback">删</span><span class="mord cjk_fallback">除</span><span class="mord">1</span><span class="mord">1</span><span class="mord cjk_fallback">行</span><span class="mord cjk_fallback">及</span><span class="mord cjk_fallback">以</span><span class="mord cjk_fallback">后</span><span class="mord cjk_fallback">所</span><span class="mord cjk_fallback">有</span><span class="mord cjk_fallback">的</span><span class="mord cjk_fallback">行</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mpunct">,</span></span></span></span>d 删除所有行<br>
+J(shift + j)　　删除两行之间的空行，实际上是合并两行。<br>
+拷贝和粘贴<br>
+yy 拷贝当前行<br>
+nyy 拷贝当前后开始的n行，比如2yy拷贝当前行及其下一行。<br>
+p  在当前光标后粘贴,如果之前使用了yy命令来复制一行，那么就在当前行的下一行粘贴。<br>
+shift+p 在当前行前粘贴<br>
+:1,10 co 20 将1-10行插入到第20行之后。<br>
+:1,$ co $ 将整个文件复制一份并添加到文件尾部。<br>
+正常模式下按v（逐字）或V（逐行）进入可视模式，然后用jklh命令移动即可选择某些行或字符，再按y即可复制<br>
+ddp交换当前行和其下一行<br>
+xp交换当前字符和其后一个字符<br>
+剪切命令<br>
+正常模式下按v（逐字）或V（逐行）进入可视模式，然后用jklh命令移动即可选择某些行或字符，再按d即可剪切<br>
+ndd 剪切当前行之后的n行。利用p命令可以对剪切的内容进行粘贴<br>
+:1,10d 将1-10行剪切。利用p命令可将剪切后的内容进行粘贴。<br>
+:1, 10 m 20 将第1-10行移动到第20行之后。<br>
+退出命令<br>
+:wq 保存并退出<br>
+ZZ 保存并退出<br>
+:q! 强制退出并忽略所有更改<br>
+:e! 放弃所有修改，并打开原来文件。<br>
+窗口命令<br>
+:split或new 打开一个新窗口，光标停在顶层的窗口上<br>
+:split file或:new file 用新窗口打开文件<br>
+split打开的窗口都是横向的，使用vsplit可以纵向打开窗口。<br>
+Ctrl+ww 移动到下一个窗口<br>
+Ctrl+wj 移动到下方的窗口<br>
+Ctrl+wk 移动到上方的窗口<br>
+关闭窗口<br>
+:close 最后一个窗口不能使用此命令，可以防止意外退出vim。<br>
+:q 如果是最后一个被关闭的窗口，那么将退出vim。<br>
+ZZ 保存并退出。<br>
+关闭所有窗口，只保留当前窗口<br>
+:only<br>
+录制宏<br>
+按q键加任意字母开始录制，再按q键结束录制（这意味着vim中的宏不可嵌套），使用的时候@加宏名，比如qa。。。q录制名为a的宏，@a使用这个宏。<br>
+执行shell命令<br>
+:!command<br>
+:!ls 列出当前目录下文件<br>
+:!perl -c <a href="http://script.pl" target="_blank" rel="noopener">script.pl</a> 检查perl脚本语法，可以不用退出vim，非常方便。<br>
+:!perl <a href="http://script.pl" target="_blank" rel="noopener">script.pl</a> 执行perl脚本，可以不用退出vim，非常方便。<br>
+:suspend或Ctrl – Z 挂起vim，回到shell，按fg可以返回vim。<br>
+注释命令<br>
+perl程序中#开始的行为注释，所以要注释某些行，只需在行首加入#<br>
+3,5 s/^/#/g 注释第3-5行<br>
+3,5 s/^#//g 解除3-5行的注释<br>
+1,$ s/^/#/g 注释整个文档。<br>
+:%s/^/#/g 注释整个文档，此法更快。<br>
+帮助命令<br>
+:help or F1 显示整个帮助<br>
+:help xxx 显示xxx的帮助，比如 :help i, :help CTRL-[（即Ctrl+[的帮助）。<br>
+:help ‘number’ Vim选项的帮助用单引号括起<br>
+:help <Esc> 特殊键的帮助用&lt;&gt;扩起<br>
+:help -t Vim启动参数的帮助用-<br>
+：help i_<Esc> 插入模式下Esc的帮助，某个模式下的帮助用模式_主题的模式<br>
+帮助文件中位于||之间的内容是超链接，可以用Ctrl+]进入链接，Ctrl+o（Ctrl + t）返回<br>
+其他非编辑命令<br>
+. 重复前一次命令<br>
+:set ruler?　　查看是否设置了ruler，在.vimrc中，使用set命令设制的选项都可以通过这个命令查看<br>
+:scriptnames　　查看vim脚本文件的位置，比如.vimrc文件，语法文件及plugin等。<br>
+:set list 显示非打印字符，如tab，空格，行尾等。如果tab无法显示，请确定用set lcs=tab:&gt;-命令设置了.vimrc文件，并确保你的文件中的确有tab，如果开启了expendtab，那么tab将被扩展为空格。<br>
+Vim教程<br>
+在Unix系统上<br>
+$ vimtutor<br>
+在Windows系统上<br>
+:help tutor<br>
+:syntax 列出已经定义的语法项<br>
+:syntax clear 清除已定义的语法规则<br>
+:syntax case match 大小写敏感，int和Int将视为不同的语法元素<br>
+:syntax case ignore 大小写无关，int和Int将视为相同的语法元素，并使用同样的配色方案</Esc></Esc></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://jinyongzhu.github.io/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/" title="VIM命令使用大全" target="_blank" rel="external">https://jinyongzhu.github.io/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">JinYongzhu</span><small class="ml-1x">Web设计开发 &amp; 服务器运维</small></a></h3>
+        <div>Web设计、开发，服务器运维；计算机技术爱好者，和广大代码爱好者共同学习、努力和进步。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NzYyOS8yNDEyNw==">
+        <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+      </div>    
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2019/1122/SHELL%E4%B8%AD%E5%90%84%E7%A7%8D%E6%8B%AC%E5%8F%B7%E7%9A%84%E4%BD%9C%E7%94%A8-%E3%80%81-%E3%80%81-%E3%80%81-%E3%80%81/" title="SHELL中各种括号的作用()、(())、[]、[[]]、{}"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2019/1122/CentOS-7%E5%AE%89%E8%A3%85git%E6%9C%8D%E5%8A%A1%E7%AB%AF/" title="CentOS 7安装git服务端"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+<script defer type="text/javascript">
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+
+    if (typeof LivereTower === 'function') { return; }
+
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>深入理解mysql锁机制--全局锁，表级锁，行锁 | JinYongzhu - Web设计开发 &amp;amp 服务器运维</title>
+  <meta name="description" content="概述 根据加锁的范围，MySQL 里面的锁大致可以分成全局锁，表级锁，行锁。  mysql 锁管理机制  1、全局锁 全局锁就是对整个数据库实例加锁。MySQL 提供了一个加全局读锁的方法，命令是Flush tables with read lock (FTWRL)。 当你需要让整个库处于只读状态的时候，可以使用这个命令，之后其他线程的以下语句会被阻塞：数据更新语句（数据的增删改）、数据定义语句">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解mysql锁机制--全局锁，表级锁，行锁">
+<meta property="og:url" content="https:&#x2F;&#x2F;jinyongzhu.github.io&#x2F;2019&#x2F;1122&#x2F;%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81&#x2F;index.html">
+<meta property="og:site_name" content="技术博客 - Hexo">
+<meta property="og:description" content="概述 根据加锁的范围，MySQL 里面的锁大致可以分成全局锁，表级锁，行锁。  mysql 锁管理机制  1、全局锁 全局锁就是对整个数据库实例加锁。MySQL 提供了一个加全局读锁的方法，命令是Flush tables with read lock (FTWRL)。 当你需要让整个库处于只读状态的时候，可以使用这个命令，之后其他线程的以下语句会被阻塞：数据更新语句（数据的增删改）、数据定义语句">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;jinyongzhu.github.io&#x2F;2019&#x2F;1122&#x2F;%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81&#x2F;52f50a4193444f2bae6207433506c51e.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;jinyongzhu.github.io&#x2F;2019&#x2F;1122&#x2F;%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81&#x2F;4b59b708bf0249c59333cbbb99089f14.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;jinyongzhu.github.io&#x2F;2019&#x2F;1122&#x2F;%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81&#x2F;44fc2a21ad004c2e82690755fae0c487.jpg">
+<meta property="og:updated_time" content="2019-11-22T02:41:55.443Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;jinyongzhu.github.io&#x2F;2019&#x2F;1122&#x2F;%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81&#x2F;52f50a4193444f2bae6207433506c51e.jpg">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://jinyongzhu.github.io/2019/1122/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="技术博客 - Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">JinYongzhu</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web设计开发 &amp; 服务器运维</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanjing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎大家来到本博客进行技术的交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/">CentOS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/">CentOS 7</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/LNMP/">LNMP</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/DDoS/">DDoS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Nginx/">Nginx</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS/" rel="tag">CentOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-7/" rel="tag">CentOS 7</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LNMP/" rel="tag">LNMP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/" rel="tag">Python</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/CentOS/" style="font-size: 13px;">CentOS</a> <a href="/tags/CentOS-7/" style="font-size: 13.33px;">CentOS 7</a> <a href="/tags/DDoS/" style="font-size: 13px;">DDoS</a> <a href="/tags/Git/" style="font-size: 13px;">Git</a> <a href="/tags/LNMP/" style="font-size: 13px;">LNMP</a> <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 13.67px;">Nginx</a> <a href="/tags/Python/" style="font-size: 13px;">Python</a> <a href="/tags/shell/" style="font-size: 13px;">shell</a> <a href="/tags/vim/" style="font-size: 13px;">vim</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">13</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/GET-%E5%92%8C-POST-%E5%88%B0%E5%BA%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="title">GET 和 POST 到底有什么区别？</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:13:39.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/Nginx/">Nginx</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/nginx-php-fpm%E5%87%BA%E7%8E%B0502-bad-gateway%E9%94%99%E8%AF%AF%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" class="title">nginx+php-fpm出现502 bad gateway错误解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:08:45.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/CentOS/">CentOS</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/" class="title">CentOS的文件权限与目录配置</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:04:53.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/shell/">shell</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/SHELL%E4%B8%AD%E5%90%84%E7%A7%8D%E6%8B%AC%E5%8F%B7%E7%9A%84%E4%BD%9C%E7%94%A8-%E3%80%81-%E3%80%81-%E3%80%81-%E3%80%81/" class="title">SHELL中各种括号的作用()、(())、[]、[[]]、{}</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:03:44.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/vim/">vim</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/" class="title">VIM命令使用大全</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:02:23.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述根据加锁的范围mysql-里面的锁大致可以分成全局锁表级锁行锁-mysql-锁管理机制"><span class="toc-number">1.</span> <span class="toc-text"> 概述
+根据加锁的范围，MySQL 里面的锁大致可以分成全局锁，表级锁，行锁。
+
+mysql 锁管理机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-全局锁全局锁就是对整个数据库实例加锁-mysql-提供了一个加全局读锁的方法命令是flush-tables-with-read-lock-ftwrl-当你需要让整个库处于只读状态的时候可以使用这个命令之后其他线程的以下语句会被阻塞数据更新语句数据的增删改-数据定义语句包括建表-修改表结构等和更新类事务的提交语句-11-全局锁使用场景全局锁的典型使用场景是做全库逻辑备份mysqldump-重新做主从时候也就是把整库每个表都-select-出来存成文本-以前有一种做法是通过-ftwrl-确保不会有其他线程对数据库做更新然后对整个库做备份-注意在备份过程中整个库完全处于只读状态-数据库只读状态的危险性如果你在主库上备份那么在备份期间都不能执行更新业务基本上就能停止-如果你在从库上备份那么备份期间从库不能执行主库同步过来的binlog会导致主从延迟-注上面逻辑备份是不加single-transaction参数看来加全局锁不太好-但是细想一下备份为什么要加锁呢来看一下不加锁会有什么问题12-不加锁产生的问题比如手机卡购买套餐信息这里分为两张表-u_acount-用于余额表u_pricing-资费套餐表步骤1-u_account-表中数据-用户a-余额300u_pricing-表中数据-用户a-套餐空2-发起备份备份过程中先备份u_account表备份完了这个表这个时候u_account-用户余额是3003-这个时候套用户购买了一个资费套餐100餐购买完成写入到u_print套餐表购买成功备份期间的数据-4-备份完成可以看到备份的结果是u_account-表中的数据没有变-u_pricing-表中的数据已经购买了资费套餐100-也就是说不加锁的话备份系统备份的得到的库不是一个逻辑时间点这个数据是逻辑不一致的-13-为什么需要全局读锁ftwrl可能有的人在疑惑官方自带的逻辑备份工具是-mysqldump-当-mysqldump-使用参数single-transaction的时候导数据之前就会启动一个事务来确保拿到一致性快照视图-而由于-mvcc-的支持这个过程中数据是可以正常更新的-为什么还需要-ftwrl-呢一致性读是好但前提是引擎要支持这个隔离级别-比如对于-myisam-这种不支持事务的引擎如果备份过程中有更新总是只能取到最新的数据那么就破坏了备份的一致性-这时我们就需要使用ftwrl-命令了-所以single-transaction-方法只适用于所有的表使用事务引擎的库-如果有的表使用了不支持事务的引擎那么备份就只能通过-ftwrl-方法-这往往是-dba-要求业务开发人员使用-innodb-替代-myisam-的原因之一-14-全局锁两种方法一flush-tables-write-read-lock二set-global-readonlytrue既然要全库只读为什么不使用-set-global-readonlytrue-的方式呢确实-readonly-方式也可以让全库进入只读状态但我还是会建议你用-ftwrl-方式主要有几个原因一是在有些系统中readonly-的值会被用来做其他逻辑比如用来判断一个库是主库还是备库-因此修改-global-变量的方式影响面更大我不建议你使用-二是在异常处理机制上有差异-如果执行ftwrl-命令之后由于客户端发生异常断开那么-mysql-会自动释放这个全局锁整个库回到可以正常更新的状态-而将整个库设置为-readonly-之后如果客户端发生异常则数据库就会一直保持-readonly-状态这样会导致整个库长时间处于不可写状态风险较高-三是readonly-对super用户权限无效注-业务的更新不只是增删改数据dml还有可能是加字段等修改表结构的操作ddl-不论是哪种方法一个库被全局锁上以后你要对里面任何一个表做加字段操作都是会被锁住的-即使没有被全局锁住加字段也不是就能一帆风顺的还有表级锁了"><span class="toc-number">2.</span> <span class="toc-text"> 1、全局锁
+全局锁就是对整个数据库实例加锁。MySQL 提供了一个加全局读锁的方法，命令是Flush tables with read lock (FTWRL)。
+当你需要让整个库处于只读状态的时候，可以使用这个命令，之后其他线程的以下语句会被阻塞：数据更新语句（数据的增删改）、数据定义语句（包括建表、修改表结构等）和更新类事务的提交语句。
+1.1 全局锁使用场景
+全局锁的典型使用场景是，做全库逻辑备份（mysqldump）。重新做主从时候
+也就是把整库每个表都 select 出来存成文本。
+以前有一种做法，是通过 FTWRL 确保不会有其他线程对数据库做更新，然后对整个库做备份。注意，在备份过程中整个库完全处于只读状态。
+数据库只读状态的危险性：
+如果你在主库上备份，那么在备份期间都不能执行更新，业务基本上就能停止。如果你在从库上备份，那么备份期间从库不能执行主库同步过来的binlog，会导致主从延迟。
+注：上面逻辑备份，是不加–single-transaction参数
+看来加全局锁不太好。但是细想一下，备份为什么要加锁呢？来看一下不加锁会有什么问题？
+1.2 不加锁产生的问题
+比如手机卡，购买套餐信息
+这里分为两张表 u_acount (用于余额表)，u_pricing (资费套餐表)
+步骤:
+1 . u_account 表中数据 用户A 余额：300
+u_pricing 表中数据 用户A 套餐：空
+2. 发起备份，备份过程中先备份u_account表，备份完了这个表，这个时候u_account 用户余额是300
+3. 这个时候套用户购买了一个资费套餐100，餐购买完成，写入到u_print套餐表购买成功，备份期间的数据。
+4. 备份完成
+可以看到备份的结果是，u_account 表中的数据没有变， u_pricing 表中的数据已经购买了资费套餐100。也就是说，不加锁的话，备份系统备份的得到的库不是一个逻辑时间点，这个数据是逻辑不一致的。
+1.3 为什么需要全局读锁(FTWRL)
+可能有的人在疑惑，官方自带的逻辑备份工具是 mysqldump。当 mysqldump 使用参数–single-transaction的时候，导数据之前就会启动一个事务，来确保拿到一致性快照视图。而由于 MVCC 的支持，这个过程中数据是可以正常更新的。
+为什么还需要 FTWRL 呢？
+一致性读是好，但前提是引擎要支持这个隔离级别。比如，对于 MyISAM 这种不支持事务的引擎，如果备份过程中有更新，总是只能取到最新的数据，那么就破坏了备份的一致性。这时，我们就需要使用FTWRL 命令了。
+所以，single-transaction 方法只适用于所有的表使用事务引擎的库。如果有的表使用了不支持事务的引擎，那么备份就只能通过 FTWRL 方法。这往往是 DBA 要求业务开发人员使用 InnoDB 替代 MyISAM 的原因之一。
+1.4 全局锁两种方法
+一.FLUSH TABLES WRITE READ LOCK
+二.set global readonly=true
+既然要全库只读，为什么不使用 set global readonly=true 的方式呢？确实 readonly 方式也可以让全库进入只读状态，但我还是会建议你用 FTWRL 方式，主要有几个原因：
+一是，在有些系统中，readonly 的值会被用来做其他逻辑，比如用来判断一个库是主库还是备库。因此，修改 global 变量的方式影响面更大，我不建议你使用。
+二是，在异常处理机制上有差异。如果执行FTWRL 命令之后由于客户端发生异常断开，那么 MySQL 会自动释放这个全局锁，整个库回到可以正常更新的状态。而将整个库设置为 readonly 之后，如果客户端发生异常，则数据库就会一直保持 readonly 状态，这样会导致整个库长时间处于不可写状态，风险较高。
+三是，readonly 对super用户权限无效
+注 ：业务的更新不只是增删改数据（DML)，还有可能是加字段等修改表结构的操作（DDL）。不论是哪种方法，一个库被全局锁上以后，你要对里面任何一个表做加字段操作，都是会被锁住的。
+即使没有被全局锁住，加字段也不是就能一帆风顺的，还有表级锁了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-表级锁mysql-中表级别锁有两种一种是普通表锁一种是元数据锁metadata-lock-mdl表锁的语法是-lock-tables-xxx-readwrite-同样使用-unlock-tables-来释放锁-通过加读锁我们可以限制其他语句进行写入但是重复加读锁不受影响-但是当我们加写锁的时候既不可以读也不可以写-同样在使用-unlock-tables-之后可以解除锁定-另外一种表级锁是-mdl-锁metadata-lock-mdl-锁不需要显示的使用在访问一个表的时候自动就被加上了-mdl-锁是用来保证读写正确性的当我们对一个表在做-增删改查操作的时候都会被加上-mdl-读锁-当要进行-ddl-的时候需要加-mdl-写锁-mdl-读锁与读锁之间不互斥因此我们可以多个线程进程对一个表进行增删改查-mdl-读写锁之间互斥用来保证表结构变更的安全性-因此如果有两个线程同时要给同一个表加字段其中一个要等另外一个执行完成之后再开始执行-下面我们来看一个比较有代表性的场景-mdl-读锁写锁互斥导致表无法读写被死锁-session-a-开始一个事务然后查询-t-表这会给-t-表加上-mdl-读锁-注意该事务被打开后就一直没有结束session-b-查询一个-t-表-这里应该是-autoocommit-会自动成功-session-c-修改表-ddl-会加-mdl-写锁和-session-a-的读锁互斥-这个时候就锁住了表-session-d-由于-session-c-造成了写锁阻塞所以后面所有的请求都会被锁住-如果该表查询频繁而且客户端有重试的机制那么这个数据库的查询线程会很快被打满-可能在进行-web-开发的同学会经常遇到类似的情况-比如我在-ipython-里面打开了一个数据库某个表的连接然后我一直没有-commit-就可能造成该表在加写锁的时候阻塞后面所有的操作-这种事情非常常见-那么我们如何安全的给小表加字段首先我们应该解决长事务或者脚本事务的问题因为他们会一直挂读锁不结束-在-mysql-的-information_schema-中的-innodb_trx-中可以查询到执行中的长事务但是比较麻烦的是这个看不到很短的事务-但是往往进行-sleep-的短事务也可能因为一直没有-commit-而导致上面的情况出现-这个时候就需要把对应表的-sleep-进程-kill-掉使其恢复正常"><span class="toc-number">3.</span> <span class="toc-text"> 2、表级锁
+MySQL 中表级别锁有两种：一种是普通表锁，一种是元数据锁(metadata lock. MDL)
+表锁的语法是 lock tables xxx read/write 同样使用 unlock tables 来释放锁。通过加读锁我们可以限制其他语句进行写入，但是重复加读锁不受影响。但是当我们加写锁的时候，既不可以读也不可以写。同样在使用 unlock tables 之后可以解除锁定。
+另外一种表级锁是 MDL 锁(metadata lock) MDL 锁不需要显示的使用，在访问一个表的时候自动就被加上了。 MDL 锁是用来保证读写正确性的，当我们对一个表在做 增删改查操作的时候都会被加上 MDL 读锁。当要进行 ddl 的时候需要加 MDL 写锁。
+MDL 读锁与读锁之间不互斥，因此我们可以多个线程进程对一个表进行增删改查。
+MDL 读写锁之间互斥，用来保证表结构变更的安全性。因此如果有两个线程同时要给同一个表加字段，其中一个要等另外一个执行完成之后再开始执行。
+下面我们来看一个比较有代表性的场景 MDL 读锁写锁互斥导致表无法读写被死锁。
+
+session A: 开始一个事务，然后查询 t 表，这会给 t 表加上 MDL 读锁。（注意该事务被打开后就一直没有结束）
+session B: 查询一个 t 表。这里应该是 autoocommit 会自动成功。
+session C: 修改表 ddl 会加 MDL 写锁，和 session A 的读锁互斥。这个时候就锁住了表。
+session D: 由于 session C 造成了写锁阻塞，所以后面所有的请求都会被锁住。
+如果该表查询频繁，而且客户端有重试的机制，那么这个数据库的查询线程会很快被打满。
+可能在进行 web 开发的同学会经常遇到类似的情况。比如我在 ipython 里面打开了一个数据库某个表的连接，然后我一直没有 commit 。就可能造成该表在加写锁的时候阻塞后面所有的操作。
+这种事情非常常见。
+那么我们如何安全的给小表加字段，首先我们应该解决长事务或者脚本事务的问题，因为他们会一直挂读锁不结束。在 MySQL 的 information_schema 中的 innodb_trx 中可以查询到执行中的长事务，但是比较麻烦的是这个看不到很短的事务。但是往往进行 sleep 的短事务也可能因为一直没有 commit 而导致上面的情况出现。
+这个时候就需要把对应表的 sleep 进程 kill 掉使其恢复正常。</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-深入理解mysql锁机制-全局锁，表级锁，行锁" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      深入理解mysql锁机制--全局锁，表级锁，行锁
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2019/1122/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81/" class="article-date">
+	  <time datetime="2019-11-22T02:35:30.000Z" itemprop="datePublished">2019-11-22</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/MySQL/" rel="tag">MySQL</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2019/1122/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="概述根据加锁的范围mysql-里面的锁大致可以分成全局锁表级锁行锁-mysql-锁管理机制"><a class="markdownIt-Anchor" href="#概述根据加锁的范围mysql-里面的锁大致可以分成全局锁表级锁行锁-mysql-锁管理机制"></a> 概述<br>
+根据加锁的范围，MySQL 里面的锁大致可以分成全局锁，表级锁，行锁。<br>
+<img src="/2019/1122/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81/52f50a4193444f2bae6207433506c51e.jpg" alt><br>
+mysql 锁管理机制</h2>
+<h2 id="1-全局锁全局锁就是对整个数据库实例加锁-mysql-提供了一个加全局读锁的方法命令是flush-tables-with-read-lock-ftwrl-当你需要让整个库处于只读状态的时候可以使用这个命令之后其他线程的以下语句会被阻塞数据更新语句数据的增删改-数据定义语句包括建表-修改表结构等和更新类事务的提交语句-11-全局锁使用场景全局锁的典型使用场景是做全库逻辑备份mysqldump-重新做主从时候也就是把整库每个表都-select-出来存成文本-以前有一种做法是通过-ftwrl-确保不会有其他线程对数据库做更新然后对整个库做备份-注意在备份过程中整个库完全处于只读状态-数据库只读状态的危险性如果你在主库上备份那么在备份期间都不能执行更新业务基本上就能停止-如果你在从库上备份那么备份期间从库不能执行主库同步过来的binlog会导致主从延迟-注上面逻辑备份是不加single-transaction参数看来加全局锁不太好-但是细想一下备份为什么要加锁呢来看一下不加锁会有什么问题12-不加锁产生的问题比如手机卡购买套餐信息这里分为两张表-u_acount-用于余额表u_pricing-资费套餐表步骤1-u_account-表中数据-用户a-余额300u_pricing-表中数据-用户a-套餐空2-发起备份备份过程中先备份u_account表备份完了这个表这个时候u_account-用户余额是3003-这个时候套用户购买了一个资费套餐100餐购买完成写入到u_print套餐表购买成功备份期间的数据-4-备份完成可以看到备份的结果是u_account-表中的数据没有变-u_pricing-表中的数据已经购买了资费套餐100-也就是说不加锁的话备份系统备份的得到的库不是一个逻辑时间点这个数据是逻辑不一致的-13-为什么需要全局读锁ftwrl可能有的人在疑惑官方自带的逻辑备份工具是-mysqldump-当-mysqldump-使用参数single-transaction的时候导数据之前就会启动一个事务来确保拿到一致性快照视图-而由于-mvcc-的支持这个过程中数据是可以正常更新的-为什么还需要-ftwrl-呢一致性读是好但前提是引擎要支持这个隔离级别-比如对于-myisam-这种不支持事务的引擎如果备份过程中有更新总是只能取到最新的数据那么就破坏了备份的一致性-这时我们就需要使用ftwrl-命令了-所以single-transaction-方法只适用于所有的表使用事务引擎的库-如果有的表使用了不支持事务的引擎那么备份就只能通过-ftwrl-方法-这往往是-dba-要求业务开发人员使用-innodb-替代-myisam-的原因之一-14-全局锁两种方法一flush-tables-write-read-lock二set-global-readonlytrue既然要全库只读为什么不使用-set-global-readonlytrue-的方式呢确实-readonly-方式也可以让全库进入只读状态但我还是会建议你用-ftwrl-方式主要有几个原因一是在有些系统中readonly-的值会被用来做其他逻辑比如用来判断一个库是主库还是备库-因此修改-global-变量的方式影响面更大我不建议你使用-二是在异常处理机制上有差异-如果执行ftwrl-命令之后由于客户端发生异常断开那么-mysql-会自动释放这个全局锁整个库回到可以正常更新的状态-而将整个库设置为-readonly-之后如果客户端发生异常则数据库就会一直保持-readonly-状态这样会导致整个库长时间处于不可写状态风险较高-三是readonly-对super用户权限无效注-业务的更新不只是增删改数据dml还有可能是加字段等修改表结构的操作ddl-不论是哪种方法一个库被全局锁上以后你要对里面任何一个表做加字段操作都是会被锁住的-即使没有被全局锁住加字段也不是就能一帆风顺的还有表级锁了"><a class="markdownIt-Anchor" href="#1-全局锁全局锁就是对整个数据库实例加锁-mysql-提供了一个加全局读锁的方法命令是flush-tables-with-read-lock-ftwrl-当你需要让整个库处于只读状态的时候可以使用这个命令之后其他线程的以下语句会被阻塞数据更新语句数据的增删改-数据定义语句包括建表-修改表结构等和更新类事务的提交语句-11-全局锁使用场景全局锁的典型使用场景是做全库逻辑备份mysqldump-重新做主从时候也就是把整库每个表都-select-出来存成文本-以前有一种做法是通过-ftwrl-确保不会有其他线程对数据库做更新然后对整个库做备份-注意在备份过程中整个库完全处于只读状态-数据库只读状态的危险性如果你在主库上备份那么在备份期间都不能执行更新业务基本上就能停止-如果你在从库上备份那么备份期间从库不能执行主库同步过来的binlog会导致主从延迟-注上面逻辑备份是不加single-transaction参数看来加全局锁不太好-但是细想一下备份为什么要加锁呢来看一下不加锁会有什么问题12-不加锁产生的问题比如手机卡购买套餐信息这里分为两张表-u_acount-用于余额表u_pricing-资费套餐表步骤1-u_account-表中数据-用户a-余额300u_pricing-表中数据-用户a-套餐空2-发起备份备份过程中先备份u_account表备份完了这个表这个时候u_account-用户余额是3003-这个时候套用户购买了一个资费套餐100餐购买完成写入到u_print套餐表购买成功备份期间的数据-4-备份完成可以看到备份的结果是u_account-表中的数据没有变-u_pricing-表中的数据已经购买了资费套餐100-也就是说不加锁的话备份系统备份的得到的库不是一个逻辑时间点这个数据是逻辑不一致的-13-为什么需要全局读锁ftwrl可能有的人在疑惑官方自带的逻辑备份工具是-mysqldump-当-mysqldump-使用参数single-transaction的时候导数据之前就会启动一个事务来确保拿到一致性快照视图-而由于-mvcc-的支持这个过程中数据是可以正常更新的-为什么还需要-ftwrl-呢一致性读是好但前提是引擎要支持这个隔离级别-比如对于-myisam-这种不支持事务的引擎如果备份过程中有更新总是只能取到最新的数据那么就破坏了备份的一致性-这时我们就需要使用ftwrl-命令了-所以single-transaction-方法只适用于所有的表使用事务引擎的库-如果有的表使用了不支持事务的引擎那么备份就只能通过-ftwrl-方法-这往往是-dba-要求业务开发人员使用-innodb-替代-myisam-的原因之一-14-全局锁两种方法一flush-tables-write-read-lock二set-global-readonlytrue既然要全库只读为什么不使用-set-global-readonlytrue-的方式呢确实-readonly-方式也可以让全库进入只读状态但我还是会建议你用-ftwrl-方式主要有几个原因一是在有些系统中readonly-的值会被用来做其他逻辑比如用来判断一个库是主库还是备库-因此修改-global-变量的方式影响面更大我不建议你使用-二是在异常处理机制上有差异-如果执行ftwrl-命令之后由于客户端发生异常断开那么-mysql-会自动释放这个全局锁整个库回到可以正常更新的状态-而将整个库设置为-readonly-之后如果客户端发生异常则数据库就会一直保持-readonly-状态这样会导致整个库长时间处于不可写状态风险较高-三是readonly-对super用户权限无效注-业务的更新不只是增删改数据dml还有可能是加字段等修改表结构的操作ddl-不论是哪种方法一个库被全局锁上以后你要对里面任何一个表做加字段操作都是会被锁住的-即使没有被全局锁住加字段也不是就能一帆风顺的还有表级锁了"></a> 1、全局锁<br>
+全局锁就是对整个数据库实例加锁。MySQL 提供了一个加全局读锁的方法，命令是Flush tables with read lock (FTWRL)。<br>
+当你需要让整个库处于只读状态的时候，可以使用这个命令，之后其他线程的以下语句会被阻塞：数据更新语句（数据的增删改）、数据定义语句（包括建表、修改表结构等）和更新类事务的提交语句。<br>
+1.1 全局锁使用场景<br>
+全局锁的典型使用场景是，做全库逻辑备份（mysqldump）。重新做主从时候<br>
+也就是把整库每个表都 select 出来存成文本。<br>
+以前有一种做法，是通过 FTWRL 确保不会有其他线程对数据库做更新，然后对整个库做备份。注意，在备份过程中整个库完全处于只读状态。<br>
+数据库只读状态的危险性：<br>
+如果你在主库上备份，那么在备份期间都不能执行更新，业务基本上就能停止。如果你在从库上备份，那么备份期间从库不能执行主库同步过来的binlog，会导致主从延迟。<br>
+注：上面逻辑备份，是不加–single-transaction参数<br>
+看来加全局锁不太好。但是细想一下，备份为什么要加锁呢？来看一下不加锁会有什么问题？<br>
+1.2 不加锁产生的问题<br>
+比如手机卡，购买套餐信息<br>
+这里分为两张表 u_acount (用于余额表)，u_pricing (资费套餐表)<br>
+步骤:<br>
+1 . u_account 表中数据 用户A 余额：300<br>
+u_pricing 表中数据 用户A 套餐：空<br>
+2. 发起备份，备份过程中先备份u_account表，备份完了这个表，这个时候u_account 用户余额是300<br>
+3. 这个时候套用户购买了一个资费套餐100，餐购买完成，写入到u_print套餐表购买成功，备份期间的数据。<br>
+4. 备份完成<br>
+可以看到备份的结果是，u_account 表中的数据没有变， u_pricing 表中的数据已经购买了资费套餐100。也就是说，不加锁的话，备份系统备份的得到的库不是一个逻辑时间点，这个数据是逻辑不一致的。<br>
+1.3 为什么需要全局读锁(FTWRL)<br>
+可能有的人在疑惑，官方自带的逻辑备份工具是 mysqldump。当 mysqldump 使用参数–single-transaction的时候，导数据之前就会启动一个事务，来确保拿到一致性快照视图。而由于 MVCC 的支持，这个过程中数据是可以正常更新的。<br>
+为什么还需要 FTWRL 呢？<br>
+一致性读是好，但前提是引擎要支持这个隔离级别。比如，对于 MyISAM 这种不支持事务的引擎，如果备份过程中有更新，总是只能取到最新的数据，那么就破坏了备份的一致性。这时，我们就需要使用FTWRL 命令了。<br>
+所以，single-transaction 方法只适用于所有的表使用事务引擎的库。如果有的表使用了不支持事务的引擎，那么备份就只能通过 FTWRL 方法。这往往是 DBA 要求业务开发人员使用 InnoDB 替代 MyISAM 的原因之一。<br>
+1.4 全局锁两种方法<br>
+一.FLUSH TABLES WRITE READ LOCK<br>
+二.set global readonly=true<br>
+既然要全库只读，为什么不使用 set global readonly=true 的方式呢？确实 readonly 方式也可以让全库进入只读状态，但我还是会建议你用 FTWRL 方式，主要有几个原因：<br>
+一是，在有些系统中，readonly 的值会被用来做其他逻辑，比如用来判断一个库是主库还是备库。因此，修改 global 变量的方式影响面更大，我不建议你使用。<br>
+二是，在异常处理机制上有差异。如果执行FTWRL 命令之后由于客户端发生异常断开，那么 MySQL 会自动释放这个全局锁，整个库回到可以正常更新的状态。而将整个库设置为 readonly 之后，如果客户端发生异常，则数据库就会一直保持 readonly 状态，这样会导致整个库长时间处于不可写状态，风险较高。<br>
+三是，readonly 对super用户权限无效<br>
+注 ：业务的更新不只是增删改数据（DML)，还有可能是加字段等修改表结构的操作（DDL）。不论是哪种方法，一个库被全局锁上以后，你要对里面任何一个表做加字段操作，都是会被锁住的。<br>
+即使没有被全局锁住，加字段也不是就能一帆风顺的，还有表级锁了</h2>
+<h2 id="2-表级锁mysql-中表级别锁有两种一种是普通表锁一种是元数据锁metadata-lock-mdl表锁的语法是-lock-tables-xxx-readwrite-同样使用-unlock-tables-来释放锁-通过加读锁我们可以限制其他语句进行写入但是重复加读锁不受影响-但是当我们加写锁的时候既不可以读也不可以写-同样在使用-unlock-tables-之后可以解除锁定-另外一种表级锁是-mdl-锁metadata-lock-mdl-锁不需要显示的使用在访问一个表的时候自动就被加上了-mdl-锁是用来保证读写正确性的当我们对一个表在做-增删改查操作的时候都会被加上-mdl-读锁-当要进行-ddl-的时候需要加-mdl-写锁-mdl-读锁与读锁之间不互斥因此我们可以多个线程进程对一个表进行增删改查-mdl-读写锁之间互斥用来保证表结构变更的安全性-因此如果有两个线程同时要给同一个表加字段其中一个要等另外一个执行完成之后再开始执行-下面我们来看一个比较有代表性的场景-mdl-读锁写锁互斥导致表无法读写被死锁-session-a-开始一个事务然后查询-t-表这会给-t-表加上-mdl-读锁-注意该事务被打开后就一直没有结束session-b-查询一个-t-表-这里应该是-autoocommit-会自动成功-session-c-修改表-ddl-会加-mdl-写锁和-session-a-的读锁互斥-这个时候就锁住了表-session-d-由于-session-c-造成了写锁阻塞所以后面所有的请求都会被锁住-如果该表查询频繁而且客户端有重试的机制那么这个数据库的查询线程会很快被打满-可能在进行-web-开发的同学会经常遇到类似的情况-比如我在-ipython-里面打开了一个数据库某个表的连接然后我一直没有-commit-就可能造成该表在加写锁的时候阻塞后面所有的操作-这种事情非常常见-那么我们如何安全的给小表加字段首先我们应该解决长事务或者脚本事务的问题因为他们会一直挂读锁不结束-在-mysql-的-information_schema-中的-innodb_trx-中可以查询到执行中的长事务但是比较麻烦的是这个看不到很短的事务-但是往往进行-sleep-的短事务也可能因为一直没有-commit-而导致上面的情况出现-这个时候就需要把对应表的-sleep-进程-kill-掉使其恢复正常"><a class="markdownIt-Anchor" href="#2-表级锁mysql-中表级别锁有两种一种是普通表锁一种是元数据锁metadata-lock-mdl表锁的语法是-lock-tables-xxx-readwrite-同样使用-unlock-tables-来释放锁-通过加读锁我们可以限制其他语句进行写入但是重复加读锁不受影响-但是当我们加写锁的时候既不可以读也不可以写-同样在使用-unlock-tables-之后可以解除锁定-另外一种表级锁是-mdl-锁metadata-lock-mdl-锁不需要显示的使用在访问一个表的时候自动就被加上了-mdl-锁是用来保证读写正确性的当我们对一个表在做-增删改查操作的时候都会被加上-mdl-读锁-当要进行-ddl-的时候需要加-mdl-写锁-mdl-读锁与读锁之间不互斥因此我们可以多个线程进程对一个表进行增删改查-mdl-读写锁之间互斥用来保证表结构变更的安全性-因此如果有两个线程同时要给同一个表加字段其中一个要等另外一个执行完成之后再开始执行-下面我们来看一个比较有代表性的场景-mdl-读锁写锁互斥导致表无法读写被死锁-session-a-开始一个事务然后查询-t-表这会给-t-表加上-mdl-读锁-注意该事务被打开后就一直没有结束session-b-查询一个-t-表-这里应该是-autoocommit-会自动成功-session-c-修改表-ddl-会加-mdl-写锁和-session-a-的读锁互斥-这个时候就锁住了表-session-d-由于-session-c-造成了写锁阻塞所以后面所有的请求都会被锁住-如果该表查询频繁而且客户端有重试的机制那么这个数据库的查询线程会很快被打满-可能在进行-web-开发的同学会经常遇到类似的情况-比如我在-ipython-里面打开了一个数据库某个表的连接然后我一直没有-commit-就可能造成该表在加写锁的时候阻塞后面所有的操作-这种事情非常常见-那么我们如何安全的给小表加字段首先我们应该解决长事务或者脚本事务的问题因为他们会一直挂读锁不结束-在-mysql-的-information_schema-中的-innodb_trx-中可以查询到执行中的长事务但是比较麻烦的是这个看不到很短的事务-但是往往进行-sleep-的短事务也可能因为一直没有-commit-而导致上面的情况出现-这个时候就需要把对应表的-sleep-进程-kill-掉使其恢复正常"></a> 2、表级锁<br>
+MySQL 中表级别锁有两种：一种是普通表锁，一种是元数据锁(metadata lock. MDL)<br>
+表锁的语法是 lock tables xxx read/write 同样使用 unlock tables 来释放锁。通过加读锁我们可以限制其他语句进行写入，但是重复加读锁不受影响。但是当我们加写锁的时候，既不可以读也不可以写。同样在使用 unlock tables 之后可以解除锁定。<br>
+另外一种表级锁是 MDL 锁(metadata lock) MDL 锁不需要显示的使用，在访问一个表的时候自动就被加上了。 MDL 锁是用来保证读写正确性的，当我们对一个表在做 增删改查操作的时候都会被加上 MDL 读锁。当要进行 ddl 的时候需要加 MDL 写锁。<br>
+MDL 读锁与读锁之间不互斥，因此我们可以多个线程进程对一个表进行增删改查。<br>
+MDL 读写锁之间互斥，用来保证表结构变更的安全性。因此如果有两个线程同时要给同一个表加字段，其中一个要等另外一个执行完成之后再开始执行。<br>
+下面我们来看一个比较有代表性的场景 MDL 读锁写锁互斥导致表无法读写被死锁。<br>
+<img src="/2019/1122/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81/4b59b708bf0249c59333cbbb99089f14.jpg" alt><br>
+session A: 开始一个事务，然后查询 t 表，这会给 t 表加上 MDL 读锁。（注意该事务被打开后就一直没有结束）<br>
+session B: 查询一个 t 表。这里应该是 autoocommit 会自动成功。<br>
+session C: 修改表 ddl 会加 MDL 写锁，和 session A 的读锁互斥。这个时候就锁住了表。<br>
+session D: 由于 session C 造成了写锁阻塞，所以后面所有的请求都会被锁住。<br>
+如果该表查询频繁，而且客户端有重试的机制，那么这个数据库的查询线程会很快被打满。<br>
+可能在进行 web 开发的同学会经常遇到类似的情况。比如我在 ipython 里面打开了一个数据库某个表的连接，然后我一直没有 commit 。就可能造成该表在加写锁的时候阻塞后面所有的操作。<br>
+这种事情非常常见。<br>
+那么我们如何安全的给小表加字段，首先我们应该解决长事务或者脚本事务的问题，因为他们会一直挂读锁不结束。在 MySQL 的 information_schema 中的 innodb_trx 中可以查询到执行中的长事务，但是比较麻烦的是这个看不到很短的事务。但是往往进行 sleep 的短事务也可能因为一直没有 commit 而导致上面的情况出现。<br>
+这个时候就需要把对应表的 sleep 进程 kill 掉使其恢复正常。</h2>
+<p>3、行级锁<br>
+先来看个描述两阶段锁的例子：<br>
+<img src="/2019/1122/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81/44fc2a21ad004c2e82690755fae0c487.jpg" alt><br>
+事务 A 会持有两条记录的行锁，并且只会在 commit 之后才会释放。<br>
+在 InnoDB 事务中，行锁是在需要的时候加上，但是并不是不需要就立刻释放，而是等事务结束之后才会释放。这个就是两阶段锁协议。<br>
+知道了这个设定我们应该在长事务中把影响并发度的锁尽量往后放。下面的这一段的介绍比较复杂，我觉得丁奇讲得还是比较清楚的所以直接引用原文了。<br>
+假设你负责实现一个电影票在线交易业务，顾客 A 要在影院 B 购买电影票。我们简化一点，这个业务需要涉及到以下操作：</p>
+<ol>
+<li>从顾客 A 账户余额中扣除电影票价；</li>
+<li>给影院 B 的账户余额增加这张电影票价；</li>
+<li>记录一条交易日志。<br>
+也就是说，要完成这个交易，我们需要 update 两条记录，并 insert 一条记录。当然，为了保证交易的原子性，我们要把这三个操作放在一个事务中。那么，你会怎样安排这三个语句在事务中的顺序呢？<br>
+试想如果同时有另外一个顾客 C 要在影院 B 买票，那么这两个事务冲突的部分就是语句 2 了。因为它们要更新同一个影院账户的余额，需要修改同一行数据。<br>
+根据两阶段锁协议，不论你怎样安排语句顺序，所有的操作需要的行锁都是在事务提交的时候才释放的。所以，如果你把语句 2 安排在最后，比如按照 3、1、2 这样的顺序，那么影院账户余额这一行的锁时间就最少。这就最大程度地减少了事务之间的锁等待，提升了并发度。</li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://jinyongzhu.github.io/2019/1122/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81/" title="深入理解mysql锁机制--全局锁，表级锁，行锁" target="_blank" rel="external">https://jinyongzhu.github.io/2019/1122/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3mysql%E9%94%81%E6%9C%BA%E5%88%B6-%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E7%BA%A7%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">JinYongzhu</span><small class="ml-1x">Web设计开发 &amp; 服务器运维</small></a></h3>
+        <div>Web设计、开发，服务器运维；计算机技术爱好者，和广大代码爱好者共同学习、努力和进步。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NzYyOS8yNDEyNw==">
+        <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+      </div>    
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2019/1122/mysqldump-Got-error-1556-You-can-not-use-locks-with-log-tables/" title="mysqldump Got error 1556 You can not use locks with log tables"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2019/1122/Nginx-502%E9%94%99%E8%AF%AF%E8%A7%A6%E5%8F%91%E6%9D%A1%E4%BB%B6%E4%B8%8E%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%E6%B1%87%E6%80%BB/" title="Nginx 502错误触发条件与解决办法汇总"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+<script defer type="text/javascript">
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+
+    if (typeof LivereTower === 'function') { return; }
+
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+
+
+
+
+
+
+
+</body>
+</html>

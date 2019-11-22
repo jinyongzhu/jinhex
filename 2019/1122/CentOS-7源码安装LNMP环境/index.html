@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>CentOS 7源码安装LNMP环境 | JinYongzhu - Web设计开发 &amp;amp 服务器运维</title>
+  <meta name="description" content="系统版本：CentOS Linux release 7.6.1810 (Core) Nginx版本：nginx-1.15.9 PHP版本：php-7.1.0 MySQL版本：mysql-8.0.15 Nginx安装： yum install gcc gcc-c++ make zlib-devel pcre-devel openssl-devel cd &#x2F;usr&#x2F;local&#x2F;src&#x2F; wget ht">
+<meta name="keywords" content="Linux,LNMP,CentOS 7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS 7源码安装LNMP环境">
+<meta property="og:url" content="https:&#x2F;&#x2F;jinyongzhu.github.io&#x2F;2019&#x2F;1122&#x2F;CentOS-7%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85LNMP%E7%8E%AF%E5%A2%83&#x2F;index.html">
+<meta property="og:site_name" content="技术博客 - Hexo">
+<meta property="og:description" content="系统版本：CentOS Linux release 7.6.1810 (Core) Nginx版本：nginx-1.15.9 PHP版本：php-7.1.0 MySQL版本：mysql-8.0.15 Nginx安装： yum install gcc gcc-c++ make zlib-devel pcre-devel openssl-devel cd &#x2F;usr&#x2F;local&#x2F;src&#x2F; wget ht">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-22T02:59:54.047Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://jinyongzhu.github.io/2019/1122/CentOS-7%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85LNMP%E7%8E%AF%E5%A2%83/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="技术博客 - Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">JinYongzhu</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web设计开发 &amp; 服务器运维</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanjing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎大家来到本博客进行技术的交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS/">CentOS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/">CentOS 7</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/CentOS-7/LNMP/">LNMP</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/DDoS/">DDoS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Nginx/">Nginx</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS/" rel="tag">CentOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CentOS-7/" rel="tag">CentOS 7</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LNMP/" rel="tag">LNMP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/" rel="tag">Python</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/CentOS/" style="font-size: 13px;">CentOS</a> <a href="/tags/CentOS-7/" style="font-size: 13.33px;">CentOS 7</a> <a href="/tags/DDoS/" style="font-size: 13px;">DDoS</a> <a href="/tags/Git/" style="font-size: 13px;">Git</a> <a href="/tags/LNMP/" style="font-size: 13px;">LNMP</a> <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Nginx/" style="font-size: 13.67px;">Nginx</a> <a href="/tags/Python/" style="font-size: 13px;">Python</a> <a href="/tags/shell/" style="font-size: 13px;">shell</a> <a href="/tags/vim/" style="font-size: 13px;">vim</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">13</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/GET-%E5%92%8C-POST-%E5%88%B0%E5%BA%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="title">GET 和 POST 到底有什么区别？</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:13:39.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/Nginx/">Nginx</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/nginx-php-fpm%E5%87%BA%E7%8E%B0502-bad-gateway%E9%94%99%E8%AF%AF%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" class="title">nginx+php-fpm出现502 bad gateway错误解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:08:45.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/CentOS/">CentOS</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/CentOS%E7%9A%84%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E4%B8%8E%E7%9B%AE%E5%BD%95%E9%85%8D%E7%BD%AE/" class="title">CentOS的文件权限与目录配置</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:04:53.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/shell/">shell</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/SHELL%E4%B8%AD%E5%90%84%E7%A7%8D%E6%8B%AC%E5%8F%B7%E7%9A%84%E4%BD%9C%E7%94%A8-%E3%80%81-%E3%80%81-%E3%80%81-%E3%80%81/" class="title">SHELL中各种括号的作用()、(())、[]、[[]]、{}</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:03:44.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Linux/vim/">vim</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/1122/VIM%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%A7%E5%85%A8/" class="title">VIM命令使用大全</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-22T03:02:23.000Z" itemprop="datePublished">2019-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#null"><span class="toc-number">1.</span> <span class="toc-text"> </span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#nginx-this-script-starts-and-stops-the-nginx-daemin"><span class="toc-number">2.</span> <span class="toc-text"> nginx - this script starts and stops the nginx daemin</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#-2"><span class="toc-number">3.</span> <span class="toc-text"> </span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#chkconfig-85-15"><span class="toc-number">4.</span> <span class="toc-text"> chkconfig:   - 85 15</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#description-nginx-is-an-https-server-https-reverse"><span class="toc-number">5.</span> <span class="toc-text"> description:  Nginx is an HTTP(S) server, HTTP(S) reverse \</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#proxy-and-imappop3-proxy-server"><span class="toc-number">6.</span> <span class="toc-text"> proxy and IMAP/POP3 proxy server</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#processname-nginx"><span class="toc-number">7.</span> <span class="toc-text"> processname: nginx</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#config-etcnginxnginxconf"><span class="toc-number">8.</span> <span class="toc-text"> config:      /etc/nginx/nginx.conf</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pidfile-varrunnginxpid"><span class="toc-number">9.</span> <span class="toc-text"> pidfile:     /var/run/nginx.pid</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#user-nginx"><span class="toc-number">10.</span> <span class="toc-text"> user:        nginx</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#source-function-library"><span class="toc-number">11.</span> <span class="toc-text"> Source function library.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#source-networking-configuration"><span class="toc-number">12.</span> <span class="toc-text"> Source networking configuration.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#check-that-networking-is-up"><span class="toc-number">13.</span> <span class="toc-text"> Check that networking is up.</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-CentOS-7源码安装LNMP环境" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CentOS 7源码安装LNMP环境
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2019/1122/CentOS-7%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85LNMP%E7%8E%AF%E5%A2%83/" class="article-date">
+	  <time datetime="2019-11-22T02:58:19.000Z" itemprop="datePublished">2019-11-22</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>►<a class="article-category-link" href="/categories/Linux/CentOS-7/">CentOS 7</a>►<a class="article-category-link" href="/categories/Linux/CentOS-7/LNMP/">LNMP</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/CentOS-7/" rel="tag">CentOS 7</a>, <a class="article-tag-link" href="/tags/LNMP/" rel="tag">LNMP</a>, <a class="article-tag-link" href="/tags/Linux/" rel="tag">Linux</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2019/1122/CentOS-7%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85LNMP%E7%8E%AF%E5%A2%83/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>系统版本：CentOS Linux release 7.6.1810 (Core)<br>
+Nginx版本：nginx-1.15.9<br>
+PHP版本：php-7.1.0<br>
+MySQL版本：mysql-8.0.15</p>
+<p>Nginx安装：<br>
+yum install gcc gcc-c++ make zlib-devel pcre-devel openssl-devel</p>
+<p>cd /usr/local/src/<br>
+wget <a href="http://nginx.org/download/nginx-1.15.9.tar.gz" target="_blank" rel="noopener">http://nginx.org/download/nginx-1.15.9.tar.gz</a><br>
+tar zxf nginx-1.15.9.tar.gz  &amp;&amp; cd nginx-1.15.9</p>
+<p>./configure --user=nginx --group=nginx --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx <br>
+–conf-path=/etc/nginx/nginx.conf --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock <br>
+–error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log <br>
+–with-http_gzip_static_module --with-http_stub_status_module --with-http_ssl_module <br>
+–with-pcre --with-file-aio --with-http_realip_module</p>
+<p>make &amp;&amp; make install</p>
+<p>cd /etc/init.d/<br>
+touch nginx<br>
+vim nginx<br>
+#编辑文件内容如下：</p>
+<p>#!/bin/sh</p>
+<h1 id><a class="markdownIt-Anchor" href="#"></a> </h1>
+<h1 id="nginx-this-script-starts-and-stops-the-nginx-daemin"><a class="markdownIt-Anchor" href="#nginx-this-script-starts-and-stops-the-nginx-daemin"></a> nginx - this script starts and stops the nginx daemin</h1>
+<h1 id="-2"><a class="markdownIt-Anchor" href="#-2"></a> </h1>
+<h1 id="chkconfig-85-15"><a class="markdownIt-Anchor" href="#chkconfig-85-15"></a> chkconfig:   - 85 15</h1>
+<h1 id="description-nginx-is-an-https-server-https-reverse"><a class="markdownIt-Anchor" href="#description-nginx-is-an-https-server-https-reverse"></a> description:  Nginx is an HTTP(S) server, HTTP(S) reverse \</h1>
+<h1 id="proxy-and-imappop3-proxy-server"><a class="markdownIt-Anchor" href="#proxy-and-imappop3-proxy-server"></a> proxy and IMAP/POP3 proxy server</h1>
+<h1 id="processname-nginx"><a class="markdownIt-Anchor" href="#processname-nginx"></a> processname: nginx</h1>
+<h1 id="config-etcnginxnginxconf"><a class="markdownIt-Anchor" href="#config-etcnginxnginxconf"></a> config:      /etc/nginx/nginx.conf</h1>
+<h1 id="pidfile-varrunnginxpid"><a class="markdownIt-Anchor" href="#pidfile-varrunnginxpid"></a> pidfile:     /var/run/nginx.pid</h1>
+<h1 id="user-nginx"><a class="markdownIt-Anchor" href="#user-nginx"></a> user:        nginx</h1>
+<h1 id="source-function-library"><a class="markdownIt-Anchor" href="#source-function-library"></a> Source function library.</h1>
+<p>. /etc/rc.d/init.d/functions</p>
+<h1 id="source-networking-configuration"><a class="markdownIt-Anchor" href="#source-networking-configuration"></a> Source networking configuration.</h1>
+<p>. /etc/sysconfig/network</p>
+<h1 id="check-that-networking-is-up"><a class="markdownIt-Anchor" href="#check-that-networking-is-up"></a> Check that networking is up.</h1>
+<p>[ “$NETWORKING” = “no” ] &amp;&amp; exit 0</p>
+<p>nginx=&quot;/usr/sbin/nginx&quot;<br>
+prog=$(basename $nginx)</p>
+<p>NGINX_CONF_FILE=&quot;/etc/nginx/nginx.conf&quot;</p>
+<p>lockfile=/var/run/nginx.lock</p>
+<p>start() {<br>
+[ -x $nginx ] || exit 5<br>
+[ -f $NGINX_CONF_FILE ] || exit 6<br>
+echo -n $&quot;Starting $prog: &quot;<br>
+daemon $nginx -c <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi><mi>G</mi><mi>I</mi><mi>N</mi><msub><mi>X</mi><mi>C</mi></msub><mi>O</mi><mi>N</mi><msub><mi>F</mi><mi>F</mi></msub><mi>I</mi><mi>L</mi><mi>E</mi><mi>r</mi><mi>e</mi><mi>t</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo>=</mo></mrow><annotation encoding="application/x-tex">NGINX_CONF_FILE
+    retval=</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="mord mathdefault">G</span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.13889em;">F</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mord mathdefault">L</span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">t</span><span class="mord mathdefault" style="margin-right:0.03588em;">v</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span></span></span></span>?<br>
+echo<br>
+[ $retval -eq 0 ] &amp;&amp; touch $lockfile<br>
+return $retval<br>
+}</p>
+<p>stop() {<br>
+echo -n $&quot;Stopping $prog: &quot;<br>
+killproc <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>p</mi><mi>r</mi><mi>o</mi><mi>g</mi><mo>−</mo><mi>Q</mi><mi>U</mi><mi>I</mi><mi>T</mi><mi>r</mi><mi>e</mi><mi>t</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo>=</mo></mrow><annotation encoding="application/x-tex">prog -QUIT
+    retval=</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7777700000000001em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">p</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">o</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">Q</span><span class="mord mathdefault" style="margin-right:0.10903em;">U</span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">t</span><span class="mord mathdefault" style="margin-right:0.03588em;">v</span><span class="mord mathdefault">a</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span></span></span></span>?<br>
+echo<br>
+[ $retval -eq 0 ] &amp;&amp; rm -f $lockfile<br>
+return $retval<br>
+}</p>
+<p>restart() {<br>
+configtest || return $?<br>
+stop<br>
+start<br>
+}</p>
+<p>reload() {<br>
+configtest || return $?<br>
+echo -n $&quot;Reloading $prog: &quot;<br>
+killproc <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mi>g</mi><mi>i</mi><mi>n</mi><mi>x</mi><mo>−</mo><mi>H</mi><mi>U</mi><mi>P</mi><mi>R</mi><mi>E</mi><mi>T</mi><mi>V</mi><mi>A</mi><mi>L</mi><mo>=</mo></mrow><annotation encoding="application/x-tex">nginx -HUP
+    RETVAL=</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">n</span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="mord mathdefault" style="margin-right:0.10903em;">U</span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="mord mathdefault" style="margin-right:0.00773em;">R</span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="mord mathdefault" style="margin-right:0.22222em;">V</span><span class="mord mathdefault">A</span><span class="mord mathdefault">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span></span></span></span>?<br>
+echo<br>
+}</p>
+<p>force_reload() {<br>
+restart<br>
+}</p>
+<p>configtest() {<br>
+$nginx -t -c $NGINX_CONF_FILE<br>
+}</p>
+<p>rh_status() {<br>
+status $prog<br>
+}</p>
+<p>rh_status_q() {<br>
+rh_status &gt;/dev/null 2&gt;&amp;1<br>
+}</p>
+<p>case “$1” in<br>
+start)<br>
+rh_status_q &amp;&amp; exit 0<br>
+$1<br>
+;;<br>
+stop)<br>
+rh_status_q || exit 0<br>
+$1<br>
+;;<br>
+restart|configtest)<br>
+$1<br>
+;;<br>
+reload)<br>
+rh_status_q || exit 7<br>
+$1<br>
+;;<br>
+force-reload)<br>
+force_reload<br>
+;;<br>
+status)<br>
+rh_status<br>
+;;<br>
+condrestart|try-restart)<br>
+rh_status_q || exit 0<br>
+;;<br>
+*)<br>
+echo $“Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}”<br>
+exit 2<br>
+esac</p>
+<p>vim /etc/nginx/nginx.conf<br>
+#在配置文件的default_type下面添加这两行内容：<br>
+types_hash_bucket_size 64;<br>
+server_names_hash_bucket_size 128;</p>
+<p>chmod +x nginx<br>
+useradd -r -M -s /sbin/nologin nginx</p>
+<p>chkconfig --add nginx<br>
+chkconfig --level 345 nginx on<br>
+chkconfig --list nginx<br>
+vim /etc/nginx/nginx.conf<br>
+service nginx start</p>
+<p>PHP安装：<br>
+yum install epel-release -y<br>
+yum install libxml2 libxml2-devel openssl openssl-devel bzip2 bzip2-devel libcurl <br>
+libcurl-devel libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel gmp <br>
+gmp-devel libmcrypt libmcrypt-devel readline readline-devel libxslt libxslt-devel <br>
+zlib zlib-devel glibc glibc-devel glib2 glib2-devel ncurses curl gdbm-devel db4-devel <br>
+libXpm-devel libX11-devel gd-devel gmp-devel expat-devel xmlrpc-c xmlrpc-c-devel <br>
+libicu-devel libmcrypt libmcrypt-devel libmemcached-devel -y</p>
+<p>cd /usr/local/src/<br>
+wget <a href="http://php.net/distributions/php-7.1.0.tar.gz" target="_blank" rel="noopener">http://php.net/distributions/php-7.1.0.tar.gz</a><br>
+tar zxf php-7.1.0.tar.gz &amp;&amp; cd php-7.1.0</p>
+<p>./configure --prefix=/usr/local/php --with-config-file-path=/etc --enable-fpm --with-fpm-user=www  <br>
+–with-fpm-group=www --enable -inline-optimization --disable-debug --disable-rpath --enable-shared  <br>
+–enable-soap --with-libxml-dir --with-xmlrpc --with-openssl --with-mcrypt --with-mhash --with-pcre-regex<br>
+–with-sqlite3 --with-zlib --enable-bcmath --with-iconv --with-bz2 --enable-calendar --with-curl <br>
+–with-cdb --enable-dom --enable-exif --enable-fileinfo --enable-filter --with-pcre-dir --enable-ftp <br>
+–with-gd --with-openssl-dir --with-jpeg-dir --with-png-dir --with-zlib-dir  --with-freetype-dir <br>
+–enable-gd-native-ttf --enable-gd-jis-conv --with-gettext --with-gmp --with-mhash --enable-json <br>
+–enable-mbstring --enable-mbregex --enable-mbregex-backtrack --with-libmbfl --with-onig --enable-pdo <br>
+–with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-zlib-dir --with-pdo-sqlite --with-readline <br>
+–enable-session --enable-shmop --enable-simplexml --enable-sockets  --enable-sysvmsg --enable-sysvsem <br>
+–enable-sysvshm --enable-wddx --with-libxml-dir --with-xsl --enable-zip --enable-mysqlnd-compression-support <br>
+–with-pear --enable-opcache</p>
+<p>make &amp;&amp; make install<br>
+/usr/local/php/bin/php -v<br>
+useradd -r -M -s /sbin/nologin www<br>
+PATH=$PATH:/usr/local/php/bin<br>
+export PATH<br>
+source /etc/profile</p>
+<p>cp php.ini-production /etc/php.ini<br>
+cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf<br>
+cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf<br>
+cp sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm<br>
+chmod +x /etc/init.d/php-fpm<br>
+chkconfig --add php-fpm<br>
+chkconfig --list php-fpm<br>
+service php-fpm start</p>
+<p>MySQL安装：<br>
+yum -y install wget cmake gcc gcc-c++ ncurses ncurses-devel libaio-devel openssl openssl-devel</p>
+<p>cd /usr/local/src</p>
+<p>wget <a href="https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-boost-8.0.15.tar.gz" target="_blank" rel="noopener">https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-boost-8.0.15.tar.gz</a></p>
+<p>groupadd mysql<br>
+useradd -r -g mysql -M -s /sbin/nologin mysql</p>
+<p>mkdir -p /usr/local/mysql<br>
+mkdir -p /data/mysql</p>
+<p>tar zxf mysql-boost-8.0.15.tar.gz -C /usr/local/</p>
+<p>cd /usr/local/mysql-8.0.15/</p>
+<p>cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/data/mysql/ -DSYSCONFDIR=/etc <br>
+-DMYSQL_TCP_PORT=3306 -DWITH_BOOST=/usr/local/mysql-8.0.15/boost/ -DFORCE_INSOURCE_BUILD=1</p>
+<p>make &amp;&amp; make install</p>
+<p>#配置mysql.cnf文件<br>
+vim /etc/my.cnf</p>
+<p>[mysqld]<br>
+server-id=1<br>
+port=3306<br>
+basedir=/usr/local/mysql<br>
+datadir=/data/mysql</p>
+<p>#目录权限修改<br>
+chown -R mysql:mysql /usr/local/mysql<br>
+chown -R mysql:mysql /data/mysql<br>
+chmod -R 755 /usr/local/mysql<br>
+chmod -R 755 /data/mysql</p>
+<p>#初始化<br>
+/usr/local/mysql/bin/mysqld --initialize --user=mysql --datadir=/data/mysql/<br>
+/usr/local/mysql/bin/mysql_ssl_rsa_setup</p>
+<p>#启动MySQL<br>
+/usr/local/mysql/bin/mysqld_safe --user=mysql &amp;</p>
+<p>#修改账号密码<br>
+/usr/local/mysql/bin/mysql -uroot -p<br>
+mysql&gt; alter user ‘root’@‘localhost’ identified by “123456”;<br>
+mysql&gt; show databases;</p>
+<p>#添加远程特账号<br>
+mysql&gt; create user root@’%’ identified by ‘123456’;<br>
+mysql&gt; grant all privileges on  <em>.</em> to root@’%’;<br>
+mysql&gt; flush privileges;</p>
+<p>#创建软链接(非必要)<br>
+ln -s /usr/local/mysql/bin/* /usr/local/bin/<br>
+mysql -h 127.0.0.1 -P 3306 -uroot -p123456 -e “select version();”</p>
+<p>9#添加到启动项(非必要)<br>
+cp support-files/mysql.server /etc/init.d/mysqld<br>
+chmo+x /etc/init.d/mysqld<br>
+chkconfig --add mysqld<br>
+chkconfig --list mysqld</p>
+<p>/etc/init.d/mysqld stop<br>
+/etc/init.d/mysqld start</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://jinyongzhu.github.io/2019/1122/CentOS-7%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85LNMP%E7%8E%AF%E5%A2%83/" title="CentOS 7源码安装LNMP环境" target="_blank" rel="external">https://jinyongzhu.github.io/2019/1122/CentOS-7%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85LNMP%E7%8E%AF%E5%A2%83/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">JinYongzhu</span><small class="ml-1x">Web设计开发 &amp; 服务器运维</small></a></h3>
+        <div>Web设计、开发，服务器运维；计算机技术爱好者，和广大代码爱好者共同学习、努力和进步。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NzYyOS8yNDEyNw==">
+        <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+      </div>    
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2019/1122/CentOS-7%E5%AE%89%E8%A3%85git%E6%9C%8D%E5%8A%A1%E7%AB%AF/" title="CentOS 7安装git服务端"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2019/1122/%E5%A6%82%E4%BD%95%E6%A3%80%E6%9F%A5Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%97%E5%88%B0DDOS%E6%94%BB%E5%87%BB/" title="如何检查Linux服务器受到DDOS攻击"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/jinyongzhu" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/jyz2006" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+<script defer type="text/javascript">
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+
+    if (typeof LivereTower === 'function') { return; }
+
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+
+
+
+
+
+
+
+</body>
+</html>
